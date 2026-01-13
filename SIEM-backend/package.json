@@ -2,8 +2,8 @@
   "name": "siem-backend",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "type": "module",
     "start": "node app.js",
     "dev": "nodemon app.js"
   },
