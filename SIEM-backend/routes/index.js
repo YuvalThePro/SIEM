@@ -1,9 +1,29 @@
-var express = require('express');
-var router = express.Router();
+import express from 'express';
+import mongoose from 'mongoose';
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+const router = express.Router();
+
+// Health check endpoint
+router.get('/health', (req, res) => {
+  const dbState = mongoose.connection.readyState;
+  const dbStatus = {
+    0: 'disconnected',
+    1: 'connected',
+    2: 'connecting',
+    3: 'disconnecting'
+  };
+
+  const healthCheck = {
+    status: dbState === 1 ? 'ok' : 'error',
+    timestamp: new Date().toISOString(),
+    database: {
+      status: dbStatus[dbState],
+      readyState: dbState
+    }
+  };
+
+  const statusCode = dbState === 1 ? 200 : 503;
+  res.status(statusCode).json(healthCheck);
 });
 
-module.exports = router;
+export default router;

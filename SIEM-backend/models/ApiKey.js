@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const apiKeySchema = new mongoose.Schema({
   tenantId: {
@@ -24,9 +24,9 @@ const apiKeySchema = new mongoose.Schema({
   lastUsed: {
     type: Date
   }
-});
+}, { timestamps: true });
 
 
 apiKeySchema.index({ tenantId: 1, name: 1 });
 
-module.exports = mongoose.model('ApiKey', apiKeySchema);
+export default mongoose.model('ApiKey', apiKeySchema);

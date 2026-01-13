@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const ruleSchema = new mongoose.Schema({
   tenantId: {
@@ -38,7 +38,7 @@ const ruleSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   }
-});
+}, { timestamps: true });
 
 
 ruleSchema.index({ tenantId: 1, enabled: 1 });
@@ -49,4 +49,4 @@ ruleSchema.pre('save', function(next) {
   next();
 });
 
-module.exports = mongoose.model('Rule', ruleSchema);
+export default mongoose.model('Rule', ruleSchema);

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const alertSchema = new mongoose.Schema({
   tenantId: {
@@ -47,11 +47,11 @@ const alertSchema = new mongoose.Schema({
   resolvedAt: {
     type: Date
   }
-});
+}, { timestamps: true });
 
 
 alertSchema.index({ tenantId: 1, ts: -1 });
 alertSchema.index({ tenantId: 1, status: 1 });
 alertSchema.index({ tenantId: 1, severity: 1 });
 
-module.exports = mongoose.model('Alert', alertSchema);
+export default mongoose.model('Alert', alertSchema);

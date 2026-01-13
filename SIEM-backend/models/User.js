@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
   tenantId: {
@@ -27,8 +27,8 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   }
-});
+}, { timestamps: true });
 
 userSchema.index({ tenantId: 1, email: 1 });
 
-module.exports = mongoose.model('User', userSchema);
+export default mongoose.model('User', userSchema);

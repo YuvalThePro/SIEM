@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const logSchema = new mongoose.Schema({
   tenantId: {
@@ -43,7 +43,7 @@ const logSchema = new mongoose.Schema({
   raw: {
     type: mongoose.Schema.Types.Mixed
   }
-});
+}, { timestamps: true });
 
 
 logSchema.index({ tenantId: 1, ts: -1 });
@@ -52,4 +52,4 @@ logSchema.index({ tenantId: 1, source: 1 });
 logSchema.index({ tenantId: 1, ip: 1, ts: -1 });
 logSchema.index({ tenantId: 1, user: 1, ts: -1 });
 
-module.exports = mongoose.model('Log', logSchema);
+export default mongoose.model('Log', logSchema);
