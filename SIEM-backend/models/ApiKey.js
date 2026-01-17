@@ -12,6 +12,10 @@ const apiKeySchema = new mongoose.Schema({
     required: true,
     trim: true
   },
+  enabled:{
+    type: Boolean,
+    default: true
+  },
   keyHash: {
     type: String,
     required: true,
