@@ -1,4 +1,4 @@
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcrypt';
 import Tenant from '../models/Tenant.js';
 import User from '../models/User.js';
 import { generateToken } from '../utils/jwt.js';
