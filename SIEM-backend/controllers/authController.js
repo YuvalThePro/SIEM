@@ -100,3 +100,42 @@ export const login = async (req, res) => {
         });
     }
 };
+
+/**
+ * Get current authenticated user info
+ * GET /api/auth/me (protected route)
+ */
+export const me = async (req, res) => {
+    try {
+        // req.user is set by authenticate middleware
+        const { userId, tenantId } = req.user;
+
+        // Fetch full user and tenant data from DB
+        const user = await User.findById(userId);
+        const tenant = await Tenant.findById(tenantId);
+
+        if (!user || !tenant) {
+            return res.status(404).json({
+                error: 'User or tenant not found'
+            });
+        }
+
+        // Return formatted response
+        res.status(200).json({
+            user: {
+                id: user._id,
+                email: user.email,
+                role: user.role
+            },
+            tenant: {
+                id: tenant._id,
+                name: tenant.name
+            }
+        });
+    } catch (error) {
+        console.error('Me endpoint error:', error);
+        res.status(500).json({
+            error: 'Failed to retrieve user information.'
+        });
+    }
+};
