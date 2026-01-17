@@ -3,6 +3,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import connectDB from './config/db.js';
+import authRouter from './routes/auth.js';
 import indexRouter from './routes/index.js';
 
 // Load environment variables
@@ -21,6 +22,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // Routes
+app.use('/api/auth', authRouter);
 app.use('/api', indexRouter);
 
 // 404 handler

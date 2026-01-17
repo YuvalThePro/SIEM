@@ -107,10 +107,8 @@ export const login = async (req, res) => {
  */
 export const me = async (req, res) => {
     try {
-        // req.user is set by authenticate middleware
         const { userId, tenantId } = req.user;
 
-        // Fetch full user and tenant data from DB
         const user = await User.findById(userId);
         const tenant = await Tenant.findById(tenantId);
 
@@ -120,7 +118,6 @@ export const me = async (req, res) => {
             });
         }
 
-        // Return formatted response
         res.status(200).json({
             user: {
                 id: user._id,
