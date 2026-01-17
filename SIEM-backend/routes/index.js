@@ -1,5 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import ingestRouter from './ingest.js';
 
 const router = express.Router();
 
@@ -25,5 +26,8 @@ router.get('/health', (req, res) => {
   const statusCode = dbState === 1 ? 200 : 503;
   res.status(statusCode).json(healthCheck);
 });
+
+// Ingest endpoint (protected by apiKeyAuth middleware in ingest router)
+router.use('/ingest', ingestRouter);
 
 export default router;

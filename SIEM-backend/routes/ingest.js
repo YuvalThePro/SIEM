@@ -1,11 +1,12 @@
 import express from 'express';
 import Log from '../models/Log.js';
 import apiKeyAuth from '../middleware/apiKeyAuth.js';
+import { ingestRateLimiter } from '../middleware/rateLimiter.js';
 
 const router = express.Router();
 
 
-router.post('/', apiKeyAuth, async (req, res) => {
+router.post('/', ingestRateLimiter, apiKeyAuth, async (req, res) => {
     try {
         const { ts, source, eventType, message, level, ip, user, path, method, status, userAgent } = req.body;
 
