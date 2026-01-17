@@ -8,15 +8,15 @@ import jwt from 'jsonwebtoken';
  * @returns {string} JWT token
  */
 export const generateToken = (userId, tenantId, role) => {
-  const payload = {
-    userId,
-    tenantId,
-    role
-  };
+    const payload = {
+        userId,
+        tenantId,
+        role
+    };
 
-  return jwt.sign(payload, process.env.JWT_SECRET, {
-    expiresIn: '7d'
-  });
+    return jwt.sign(payload, process.env.JWT_SECRET, {
+        expiresIn: '7d'
+    });
 };
 
 /**
@@ -26,9 +26,9 @@ export const generateToken = (userId, tenantId, role) => {
  * @throws {Error} If token is invalid or expired
  */
 export const verifyToken = (token) => {
-  try {
-    return jwt.verify(token, process.env.JWT_SECRET);
-  } catch (error) {
-    throw new Error('Invalid or expired token');
-  }
+    try {
+        return jwt.verify(token, process.env.JWT_SECRET);
+    } catch (error) {
+        throw new Error('Invalid or expired token');
+    }
 };
