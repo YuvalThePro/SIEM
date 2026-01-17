@@ -61,15 +61,12 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
-
-        // Validate input
         if (!email || !password) {
             return res.status(400).json({
                 error: 'Please provide email and password'
             });
         }
 
-        // Find user by email and populate tenant
         const user = await User.findOne({ email }).populate('tenantId');
         if (!user) {
             return res.status(401).json({
@@ -77,18 +74,13 @@ export const login = async (req, res) => {
             });
         }
 
-        // Compare password
         const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
         if (!isPasswordValid) {
             return res.status(401).json({
                 error: 'Invalid credentials'
             });
         }
-
-        // Generate JWT token
         const token = generateToken(user._id.toString(), user.tenantId._id.toString(), user.role);
-
-        // Return response
         res.status(200).json({
             token,
             user: {
