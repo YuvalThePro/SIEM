@@ -1,10 +1,10 @@
 import { createContext, useContext, useState } from 'react';
 
-const AuthContext = createContext(null);
+const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [tenant, setTenant] = useState(null);
+    const [user, setUser] = useState();
+    const [tenant, setTenant] = useState();
     const [token, setToken] = useState(localStorage.getItem('token'));
     const [isLoading, setIsLoading] = useState(false);
 
@@ -16,9 +16,9 @@ export const AuthProvider = ({ children }) => {
     };
 
     const logout = () => {
-        setUser(null);
-        setTenant(null);
-        setToken(null);
+        setUser();
+        setTenant();
+        setToken();
         localStorage.removeItem('token');
     };
 
