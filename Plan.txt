@@ -1,0 +1,58 @@
+7) frontend/logs-ui
+Logs page table + filters + pagination
+
+Log details modal (show raw nicely)
+
+Connect to GET /api/logs
+
+8) backend/api-keys-portal
+apiKeys management for portal (JWT + admin-only)
+
+GET /api/api-keys
+
+POST /api/api-keys (generate raw key once, store hash)
+
+PATCH /api/api-keys/:id/revoke
+
+Update lastUsedAt when ingest key is used
+
+9) frontend/api-keys-ui
+Settings → API Keys page
+
+List keys + status + lastUsedAt
+
+Create key (show once + copy)
+
+Revoke key
+
+10) backend/alerts-v1
+Alert model
+
+First rule: “5 LOGIN_FAILED from same IP in 60s”
+
+GET /api/alerts
+
+PATCH /api/alerts/:id close/reopen
+
+11) frontend/alerts-ui
+Alerts list + filters (severity/status)
+
+Alert details (matched logs)
+
+Close/reopen button
+
+12) dashboard-stats
+Backend + frontend together (small but complete)
+
+GET /api/stats (counts by level, top IPs, top eventTypes)
+
+Dashboard page shows cards + “recent logs/alerts”
+
+13) hardening
+Validate ingest payload (reject junk)
+
+Rate limit /api/ingest
+
+Request size limit + consistent error responses
+
+If you want it even more spread (but still reasonable), we can split dashboard-stats into backend/stats and frontend/dashboard.
