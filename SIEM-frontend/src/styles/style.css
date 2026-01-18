@@ -44,7 +44,6 @@ body {
     flex-direction: column;
 }
 
-/* Typography */
 h1,
 h2,
 h3,
@@ -111,8 +110,19 @@ button {
     color: white;
 }
 
-.btn-primary:hover {
+.btn-primary:hover:not(:disabled) {
     background-color: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-primary:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 .btn-danger {
@@ -120,8 +130,19 @@ button {
     color: white;
 }
 
-.btn-danger:hover {
+.btn-danger:hover:not(:disabled) {
     background-color: var(--danger-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-danger:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.btn-danger:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 /* Input Fields */
@@ -132,7 +153,14 @@ select {
     font-size: 0.875rem;
 }
 
-/* Container */
+input:disabled,
+textarea:disabled,
+select:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #f3f4f6;
+}
+
 .container {
     width: 100%;
     max-width: 1200px;
@@ -140,7 +168,6 @@ select {
     padding: 0 1rem;
 }
 
-/* Loading Spinner */
 .spinner {
     border: 3px solid var(--border-color);
     border-top: 3px solid var(--primary-color);

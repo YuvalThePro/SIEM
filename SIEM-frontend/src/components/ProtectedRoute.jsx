@@ -18,9 +18,11 @@ function ProtectedRoute({ children, requiredRole }) {
 
     if (requiredRole && user.role !== requiredRole) {
         return (
-            <div className="container" style={{ padding: '2rem', textAlign: 'center' }}>
-                <h2>Access Denied</h2>
-                <p>You don't have permission to view this page.</p>
+            <div className="container page-container">
+                <div className="page-card text-center">
+                    <h2>Access Denied</h2>
+                    <p>You don't have permission to view this page.</p>
+                </div>
             </div>
         );
     }
