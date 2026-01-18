@@ -39,7 +39,7 @@ function Login() {
 
             login(data.user, data.tenant, data.token);
 
-            navigate('/logs');
+            navigate('/dashboard');
         } catch (err) {
             setError(err.error || 'Login failed. Please try again.');
         } finally {

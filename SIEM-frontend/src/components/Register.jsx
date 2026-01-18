@@ -21,7 +21,6 @@ function Register() {
             ...formData,
             [e.target.name]: e.target.value
         });
-        // Clear error when user starts typing
         if (error) setError('');
     };
 
@@ -53,8 +52,8 @@ function Register() {
             // Save auth data to context
             login(data.user, data.tenant, data.token);
 
-            // Navigate to logs page
-            navigate('/logs');
+            // Navigate to dashboard page
+            navigate('/dashboard');
         } catch (err) {
             setError(err.error || 'Registration failed. Please try again.');
         } finally {
