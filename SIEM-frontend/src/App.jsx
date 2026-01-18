@@ -1,4 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
+import Login from './components/Login';
+import Register from './components/Register';
 import './styles/style.css';
 
 function App() {
@@ -6,7 +8,8 @@ function App() {
     <div className="app">
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
-        {/* Auth routes will be added in later commits */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         {/* Protected routes will be added in later commits */}
       </Routes>
     </div>

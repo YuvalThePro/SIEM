@@ -1,7 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import ingestRouter from './ingest.js';
-import devRouter from './dev.js';
 
 const router = express.Router();
 
