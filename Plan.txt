@@ -54,5 +54,3 @@ Validate ingest payload (reject junk)
 Rate limit /api/ingest
 
 Request size limit + consistent error responses
-
-If you want it even more spread (but still reasonable), we can split dashboard-stats into backend/stats and frontend/dashboard.
