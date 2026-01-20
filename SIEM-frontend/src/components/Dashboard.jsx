@@ -30,6 +30,30 @@ function Dashboard() {
                     <p><strong>Company:</strong> {tenant?.name}</p>
                     <p><strong>Tenant ID:</strong> {tenant?.id}</p>
                 </div>
+
+                <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                    <button
+                        onClick={() => navigate('/logs')}
+                        className="btn btn-primary"
+                    >
+                        View Logs
+                    </button>
+                    <button
+                        onClick={() => navigate('/alerts')}
+                        className="btn btn-primary"
+                    >
+                        View Alerts
+                    </button>
+                    {user?.role === 'admin' && (
+                        <button
+                            onClick={() => navigate('/api-keys')}
+                            className="btn btn-secondary"
+                        >
+                            API Keys
+                        </button>
+                    )}
+                </div>
+
                 <button
                     onClick={handleLogout}
                     className="btn btn-danger"

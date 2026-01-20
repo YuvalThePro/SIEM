@@ -43,4 +43,20 @@ api.interceptors.response.use(
   }
 );
 
+// API Keys management
+export const getApiKeys = async () => {
+  const response = await api.get('/api-keys');
+  return response.data;
+};
+
+export const createApiKey = async (name) => {
+  const response = await api.post('/api-keys', { name });
+  return response.data;
+};
+
+export const revokeApiKey = async (id) => {
+  const response = await api.patch(`/api-keys/${id}/revoke`);
+  return response.data;
+};
+
 export default api;

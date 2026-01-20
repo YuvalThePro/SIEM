@@ -4,6 +4,7 @@ import Register from './components/Register';
 import Dashboard from './components/Dashboard';
 import Logs from './components/Logs';
 import Alerts from './components/Alerts';
+import ApiKeys from './components/ApiKeys';
 import ProtectedRoute from './components/ProtectedRoute';
 import './styles/style.css';
 
@@ -36,6 +37,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Alerts />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/api-keys"
+          element={
+            <ProtectedRoute>
+              <ApiKeys />
             </ProtectedRoute>
           }
         />
