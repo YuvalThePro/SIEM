@@ -10,7 +10,6 @@ export const getAlerts = async (req, res) => {
         const { tenantId } = req.user;
         const query = { tenantId };
 
-        // Status filter
         if (req.query.status) {
             if (!['open', 'closed'].includes(req.query.status)) {
                 return res.status(400).json({
@@ -20,7 +19,6 @@ export const getAlerts = async (req, res) => {
             query.status = req.query.status;
         }
 
-        // Date range filter (from/to on ts field)
         if (req.query.from || req.query.to) {
             query.ts = {};
             if (req.query.from) {
@@ -31,7 +29,6 @@ export const getAlerts = async (req, res) => {
             }
         }
 
-        // Severity filter
         if (req.query.severity) {
             if (!['low', 'medium', 'high', 'critical'].includes(req.query.severity)) {
                 return res.status(400).json({
@@ -41,7 +38,6 @@ export const getAlerts = async (req, res) => {
             query.severity = req.query.severity;
         }
 
-        // Pagination
         const limit = Math.min(parseInt(req.query.limit) || 25, 100);
         const skip = parseInt(req.query.skip) || 0;
 
@@ -54,7 +50,6 @@ export const getAlerts = async (req, res) => {
             Alert.countDocuments(query)
         ]);
 
-        // Map response to control output format
         const items = alerts.map(alert => ({
             id: alert._id,
             tenantId: alert.tenantId,
@@ -146,7 +141,7 @@ export const updateAlertStatus = async (req, res) => {
 
     } catch (error) {
         console.error('Update alert status error:', error);
-        
+
         // Handle invalid ObjectId
         if (error.name === 'CastError') {
             return res.status(400).json({
