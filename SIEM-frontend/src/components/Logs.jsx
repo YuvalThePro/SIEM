@@ -19,6 +19,7 @@ function Logs() {
     const [currentPage, setCurrentPage] = useState(1);
     const [selectedLog, setSelectedLog] = useState(null);
     const [copySuccess, setCopySuccess] = useState(false);
+    const [autoRefresh, setAutoRefresh] = useState(false);
 
     const [filters, setFilters] = useState({
         from: '',
@@ -51,6 +52,16 @@ function Logs() {
             return () => document.removeEventListener('keydown', handleEscape);
         }
     }, [selectedLog]);
+
+    useEffect(() => {
+        if (autoRefresh && !selectedLog) {
+            const interval = setInterval(() => {
+                fetchLogs();
+            }, 30000);
+
+            return () => clearInterval(interval);
+        }
+    }, [autoRefresh, selectedLog, filters, currentPage]);
 
     const fetchLogs = async (customFilters = null, page = currentPage) => {
         try {
@@ -307,6 +318,19 @@ function Logs() {
                         <button onClick={handleClearFilters} className="btn btn-secondary">
                             Clear Filters
                         </button>
+                        <div className="auto-refresh-toggle">
+                            <label className="checkbox-label">
+                                <input
+                                    type="checkbox"
+                                    checked={autoRefresh}
+                                    onChange={(e) => setAutoRefresh(e.target.checked)}
+                                />
+                                <span>Auto-refresh every 30s</span>
+                                {autoRefresh && !selectedLog && (
+                                    <span className="refresh-indicator"></span>
+                                )}
+                            </label>
+                        </div>
                     </div>
                 </div>
 
