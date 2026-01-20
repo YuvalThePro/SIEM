@@ -3,10 +3,10 @@ import { body, validationResult } from 'express-validator';
 import Log from '../models/Log.js';
 import apiKeyAuth from '../middleware/apiKeyAuth.js';
 import { ingestRateLimiter } from '../middleware/rateLimiter.js';
+import { checkBruteForce, createBruteForceAlert } from '../utils/alertRules.js';
 
 const router = express.Router();
 
-// Validation rules for ingest endpoint
 const ingestValidation = [
     body('source')
         .notEmpty().withMessage('source is required')
@@ -45,7 +45,6 @@ const ingestValidation = [
         .trim()
         .isLength({ max: 100 }).withMessage('user must be less than 100 characters'),
 
-    // Custom validation: at least one of eventType or message must be present
     body().custom((value, { req }) => {
         if (!req.body.eventType && !req.body.message) {
             throw new Error('At least one of eventType or message is required');
@@ -68,7 +67,6 @@ router.post('/', ingestRateLimiter, apiKeyAuth, ingestValidation, async (req, re
 
         const { ts, source, eventType, message, level, ip, user, path, method, status, userAgent } = req.body;
 
-        // Build log document
         const logData = {
             tenantId: req.tenantId,
             ts: ts ? new Date(ts) : new Date(),
@@ -76,16 +74,29 @@ router.post('/', ingestRateLimiter, apiKeyAuth, ingestValidation, async (req, re
             eventType: eventType || 'GENERIC_EVENT',
             message: message || '',
             level: level || 'info',
-            raw: req.body // Store the full original payload
+            raw: req.body
         };
 
 
         if (ip) logData.ip = ip;
         if (user) logData.user = user;
 
-        // Create and save the log
         const log = new Log(logData);
         await log.save();
+
+        // Check for brute force pattern (fire and forget, don't block response)
+        if (eventType === 'LOGIN_FAILED' && ip) {
+            setImmediate(async () => {
+                try {
+                    const detection = await checkBruteForce(req.tenantId, ip);
+                    if (detection) {
+                        await createBruteForceAlert(req.tenantId, ip, detection.logs);
+                    }
+                } catch (err) {
+                    console.error('Brute force detection error:', err);
+                }
+            });
+        }
 
         // Return success with log ID
         res.status(201).json({
