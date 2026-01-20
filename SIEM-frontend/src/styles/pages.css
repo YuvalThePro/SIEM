@@ -97,3 +97,75 @@
 .placeholder-box p {
   margin: 0;
 }
+
+.loading-container,
+.error-container,
+.empty-state {
+  margin-top: 2rem;
+  padding: 2rem;
+  text-align: center;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+}
+
+.error-message {
+  color: var(--danger);
+  margin-bottom: 1rem;
+}
+
+.table-container {
+  margin-top: 2rem;
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.data-table thead {
+  background: var(--bg-secondary);
+}
+
+.data-table th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  border-bottom: 2px solid var(--border-color);
+}
+
+.data-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+.data-table tbody tr:hover {
+  background: var(--bg-secondary);
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-active {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-revoked {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.btn-sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+}
