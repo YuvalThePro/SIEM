@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import Tenant from '../models/Tenant.js';
 import User from '../models/User.js';
 import { generateToken } from '../utils/jwt.js';
+import { hashApiKey } from '../utils/crypto.js';
 
 /**
  * Register a new tenant and admin user
@@ -24,7 +25,7 @@ export const register = async (req, res) => {
         const tenant = await Tenant.create({
             name: companyName
         });
-        const passwordHash = await bcrypt.hash(password, 10);
+        const passwordHash = await hashApiKey(password, 10);
 
         // Create admin user
         const user = await User.create({

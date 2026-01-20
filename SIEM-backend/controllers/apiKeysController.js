@@ -1,6 +1,5 @@
-import bcrypt from 'bcrypt';
-import crypto from 'crypto';
 import ApiKey from '../models/ApiKey.js';
+import { generateApiKey, hashApiKey } from '../utils/crypto.js';
 
 /**
  * List all API keys for the authenticated user's tenant
@@ -47,10 +46,9 @@ export const createApiKey = async (req, res) => {
         }
 
         const keyLength = parseInt(process.env.API_KEY_LENGTH || '32', 10);
-        const randomBytes = crypto.randomBytes(keyLength);
-        const rawKey = `ak_live_${randomBytes.toString('hex')}`;
+        const rawKey = `ak_live_${generateApiKey(keyLength)}`;
 
-        const keyHash = await bcrypt.hash(rawKey, 10);
+        const keyHash = await hashApiKey(rawKey, 10);
 
         const apiKey = await ApiKey.create({
             tenantId: req.user.tenantId,
