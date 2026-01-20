@@ -63,18 +63,36 @@ function Logs() {
         }
     }, [autoRefresh, selectedLog, filters, currentPage]);
 
+    /**
+     * Fetch logs from API with filtering and pagination
+     * @param {Object} customFilters - Optional filters to override state
+     * @param {number} page - Page number to fetch
+     */
     const fetchLogs = async (customFilters = null, page = currentPage) => {
         try {
             setLoading(true);
             setError('');
 
             const activeFilters = customFilters || filters;
+            
+            // Validate date range
+            if (activeFilters.from && activeFilters.to) {
+                const fromDate = new Date(activeFilters.from);
+                const toDate = new Date(activeFilters.to);
+                if (fromDate > toDate) {
+                    setError('"From" date must be before "To" date');
+                    setLoading(false);
+                    return;
+                }
+            }
+
             const skip = (page - 1) * pageInfo.limit;
             const params = {
                 limit: pageInfo.limit,
                 skip: skip
             };
 
+            // Only include non empty filter values
             if (activeFilters.from) params.from = activeFilters.from;
             if (activeFilters.to) params.to = activeFilters.to;
             if (activeFilters.level) params.level = activeFilters.level;
@@ -88,12 +106,33 @@ function Logs() {
             setLogs(data.items);
             setPageInfo(data.page);
         } catch (err) {
-            setError(err.error || 'Failed to load logs');
+            let errorMessage = 'Failed to load logs';
+            
+            if (!navigator.onLine) {
+                errorMessage = 'Network error: Please check your internet connection';
+            } else if (err.error) {
+                errorMessage = err.error;
+            } else if (err.message) {
+                if (err.message.includes('403')) {
+                    errorMessage = 'Access forbidden: You do not have permission to view these logs';
+                } else if (err.message.includes('500')) {
+                    errorMessage = 'Server error: Please try again later';
+                } else if (err.message.includes('timeout')) {
+                    errorMessage = 'Request timeout: The server took too long to respond';
+                } else {
+                    errorMessage = err.message;
+                }
+            }
+            
+            setError(errorMessage);
         } finally {
             setLoading(false);
         }
     };
 
+    /**
+     * Handle filter input changes
+     */
     const handleFilterChange = (e) => {
         setFilters({
             ...filters,
@@ -101,11 +140,17 @@ function Logs() {
         });
     };
 
+    /**
+     * Apply current filters and reset to page 1
+     */
     const handleApplyFilters = () => {
         setCurrentPage(1);
         fetchLogs(null, 1);
     };
 
+    /**
+     * Clear all filters and reset to page 1
+     */
     const handleClearFilters = () => {
         const clearedFilters = {
             from: '',
@@ -142,6 +187,9 @@ function Logs() {
         navigate('/login');
     };
 
+    /**
+     * Navigate to previous page
+     */
     const handlePrevPage = () => {
         if (currentPage > 1) {
             const newPage = currentPage - 1;
@@ -150,15 +198,23 @@ function Logs() {
         }
     };
 
+    /**
+     * Navigate to next page with validation
+     */
     const handleNextPage = () => {
         const totalPages = Math.ceil(pageInfo.total / pageInfo.limit);
-        if (currentPage < totalPages) {
+        if (currentPage < totalPages && totalPages > 0) {
             const newPage = currentPage + 1;
             setCurrentPage(newPage);
             fetchLogs(null, newPage);
         }
     };
 
+    /**
+     * Format timestamp to readable date string
+     * @param {Date|string} ts - Timestamp to format
+     * @returns {string} Formatted date string
+     */
     const formatTimestamp = (ts) => {
         const date = new Date(ts);
         const options = {
@@ -173,6 +229,11 @@ function Logs() {
         return date.toLocaleString('en-US', options);
     };
 
+    /**
+     * Get CSS class for level badge based on severity
+     * @param {string} level - Log level (info, warn, error, critical)
+     * @returns {string} CSS class name
+     */
     const getLevelBadgeClass = (level) => {
         const levelMap = {
             info: 'badge-info',
@@ -198,7 +259,12 @@ function Logs() {
 
                 {error && (
                     <div className="error-banner">
-                        {error}
+                        <div className="error-message">
+                            {error}
+                        </div>
+                        <button onClick={() => fetchLogs()} className="btn-retry">
+                            Retry
+                        </button>
                     </div>
                 )}
 
