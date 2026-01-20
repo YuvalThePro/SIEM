@@ -12,6 +12,17 @@ function Logs() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
+    const [filters, setFilters] = useState({
+        from: '',
+        to: '',
+        level: '',
+        source: '',
+        eventType: '',
+        ip: '',
+        user: '',
+        q: ''
+    });
+
     useEffect(() => {
         fetchLogs();
     }, []);
@@ -27,6 +38,31 @@ function Logs() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleFilterChange = (e) => {
+        setFilters({
+            ...filters,
+            [e.target.name]: e.target.value
+        });
+    };
+
+    const handleApplyFilters = () => {
+        fetchLogs();
+    };
+
+    const handleClearFilters = () => {
+        setFilters({
+            from: '',
+            to: '',
+            level: '',
+            source: '',
+            eventType: '',
+            ip: '',
+            user: '',
+            q: ''
+        });
+        fetchLogs();
     };
 
     const handleLogout = () => {
@@ -56,6 +92,125 @@ function Logs() {
                         {error}
                     </div>
                 )}
+
+                <div className="filters-bar">
+                    <div className="filters-row">
+                        <div className="filter-group">
+                            <label htmlFor="from" className="filter-label">From</label>
+                            <input
+                                type="datetime-local"
+                                id="from"
+                                name="from"
+                                className="filter-input"
+                                value={filters.from}
+                                onChange={handleFilterChange}
+                            />
+                        </div>
+
+                        <div className="filter-group">
+                            <label htmlFor="to" className="filter-label">To</label>
+                            <input
+                                type="datetime-local"
+                                id="to"
+                                name="to"
+                                className="filter-input"
+                                value={filters.to}
+                                onChange={handleFilterChange}
+                            />
+                        </div>
+
+                        <div className="filter-group">
+                            <label htmlFor="level" className="filter-label">Level</label>
+                            <select
+                                id="level"
+                                name="level"
+                                className="filter-input"
+                                value={filters.level}
+                                onChange={handleFilterChange}
+                            >
+                                <option value="">All</option>
+                                <option value="info">Info</option>
+                                <option value="warn">Warn</option>
+                                <option value="error">Error</option>
+                                <option value="critical">Critical</option>
+                            </select>
+                        </div>
+
+                        <div className="filter-group">
+                            <label htmlFor="source" className="filter-label">Source</label>
+                            <input
+                                type="text"
+                                id="source"
+                                name="source"
+                                className="filter-input"
+                                placeholder="Source system"
+                                value={filters.source}
+                                onChange={handleFilterChange}
+                            />
+                        </div>
+
+                        <div className="filter-group">
+                            <label htmlFor="eventType" className="filter-label">Event Type</label>
+                            <input
+                                type="text"
+                                id="eventType"
+                                name="eventType"
+                                className="filter-input"
+                                placeholder="Event type"
+                                value={filters.eventType}
+                                onChange={handleFilterChange}
+                            />
+                        </div>
+
+                        <div className="filter-group">
+                            <label htmlFor="ip" className="filter-label">IP</label>
+                            <input
+                                type="text"
+                                id="ip"
+                                name="ip"
+                                className="filter-input"
+                                placeholder="IP address"
+                                value={filters.ip}
+                                onChange={handleFilterChange}
+                            />
+                        </div>
+
+                        <div className="filter-group">
+                            <label htmlFor="user" className="filter-label">User</label>
+                            <input
+                                type="text"
+                                id="user"
+                                name="user"
+                                className="filter-input"
+                                placeholder="Username"
+                                value={filters.user}
+                                onChange={handleFilterChange}
+                            />
+                        </div>
+
+                        <div className="filter-group">
+                            <label htmlFor="q" className="filter-label">Search</label>
+                            <input
+                                type="text"
+                                id="q"
+                                name="q"
+                                className="filter-input"
+                                placeholder="Search in message"
+                                value={filters.q}
+                                onChange={handleFilterChange}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="filters-actions">
+                        <button onClick={handleApplyFilters} className="btn btn-primary">
+                            Apply Filters
+                        </button>
+                        <button onClick={handleClearFilters} className="btn btn-secondary">
+                            Clear Filters
+                        </button>
+                    </div>
+                </div>
 
                 {loading ? (
                     <div className="loading-container">
