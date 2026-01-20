@@ -16,43 +16,43 @@ import api from './api';
  * @returns {Promise<{items: Array, page: {limit: number, skip: number, total: number}}>}
  */
 export const getLogs = async (filters = {}) => {
-  try {
-    const params = {};
+    try {
+        const params = {};
 
-    if (filters.from) {
-      params.from = filters.from;
-    }
-    if (filters.to) {
-      params.to = filters.to;
-    }
-    if (filters.level) {
-      params.level = filters.level;
-    }
-    if (filters.source) {
-      params.source = filters.source;
-    }
-    if (filters.eventType) {
-      params.eventType = filters.eventType;
-    }
-    if (filters.ip) {
-      params.ip = filters.ip;
-    }
-    if (filters.user) {
-      params.user = filters.user;
-    }
-    if (filters.q) {
-      params.q = filters.q;
-    }
-    if (filters.limit) {
-      params.limit = filters.limit;
-    }
-    if (filters.skip !== undefined) {
-      params.skip = filters.skip;
-    }
+        if (filters.from) {
+            params.from = filters.from;
+        }
+        if (filters.to) {
+            params.to = filters.to;
+        }
+        if (filters.level) {
+            params.level = filters.level;
+        }
+        if (filters.source) {
+            params.source = filters.source;
+        }
+        if (filters.eventType) {
+            params.eventType = filters.eventType;
+        }
+        if (filters.ip) {
+            params.ip = filters.ip;
+        }
+        if (filters.user) {
+            params.user = filters.user;
+        }
+        if (filters.q) {
+            params.q = filters.q;
+        }
+        if (filters.limit) {
+            params.limit = filters.limit;
+        }
+        if (filters.skip !== undefined) {
+            params.skip = filters.skip;
+        }
 
-    const response = await api.get('/logs', { params });
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || { error: 'Failed to fetch logs' };
-  }
+        const response = await api.get('/logs', { params });
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || { error: 'Failed to fetch logs' };
+    }
 };

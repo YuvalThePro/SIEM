@@ -97,3 +97,66 @@
 .placeholder-box p {
   margin: 0;
 }
+
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background-color: #fee;
+  border: 1px solid #fcc;
+  border-radius: var(--radius-md);
+  color: var(--danger-color);
+  font-size: 0.875rem;
+}
+
+.empty-state {
+  margin-top: 2rem;
+  padding: 3rem;
+  text-align: center;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.table-container {
+  margin-top: 1.5rem;
+  overflow-x: auto;
+}
+
+.logs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.logs-table th {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  font-weight: 600;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border-bottom: 2px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.logs-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+.logs-table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.logs-table tbody tr:hover {
+  background-color: var(--bg-secondary);
+  cursor: pointer;
+}
