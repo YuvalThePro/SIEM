@@ -12,18 +12,15 @@ function ApiKeys() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Create modal state
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [newKeyName, setNewKeyName] = useState('');
     const [creating, setCreating] = useState(false);
     const [createError, setCreateError] = useState(null);
 
-    // Raw key modal state
     const [showRawKeyModal, setShowRawKeyModal] = useState(false);
     const [rawKeyValue, setRawKeyValue] = useState('');
     const [copiedMessage, setCopiedMessage] = useState('');
 
-    // Revoke state
     const [revokeLoadingId, setRevokeLoadingId] = useState(null);
     const [showRevokeConfirm, setShowRevokeConfirm] = useState(false);
     const [keyToRevoke, setKeyToRevoke] = useState(null);
