@@ -29,29 +29,35 @@ const alertSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['open', 'investigating', 'resolved', 'false-positive'],
+    enum: ['open', 'closed'],
     default: 'open',
+    index: true
+  },
+  entities: {
+    type: mongoose.Schema.Types.Mixed,
+    default: {}
+  },
+  dedupeKey: {
+    type: String,
+    sparse: true,
     index: true
   },
   matchedLogIds: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Log'
   }],
-  assignedTo: {
+  closedAt: {
+    type: Date
+  },
+  closedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
-  },
-  notes: {
-    type: String
-  },
-  resolvedAt: {
-    type: Date
   }
 }, { timestamps: true });
 
 
 alertSchema.index({ tenantId: 1, ts: -1 });
-alertSchema.index({ tenantId: 1, status: 1 });
-alertSchema.index({ tenantId: 1, severity: 1 });
+alertSchema.index({ tenantId: 1, status: 1, ts: -1 });
+alertSchema.index({ tenantId: 1, dedupeKey: 1 }, { unique: true, partialFilterExpression: { dedupeKey: { $exists: true } } });
 
 export default mongoose.model('Alert', alertSchema);
