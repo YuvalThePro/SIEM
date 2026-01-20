@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { getLogs } from '../services/logsService';
@@ -31,9 +31,26 @@ function Logs() {
         q: ''
     });
 
+    const closeButtonRef = useRef(null);
+
     useEffect(() => {
         fetchLogs();
     }, []);
+
+    useEffect(() => {
+        if (selectedLog) {
+            closeButtonRef.current?.focus();
+
+            const handleEscape = (e) => {
+                if (e.key === 'Escape') {
+                    handleCloseModal();
+                }
+            };
+
+            document.addEventListener('keydown', handleEscape);
+            return () => document.removeEventListener('keydown', handleEscape);
+        }
+    }, [selectedLog]);
 
     const fetchLogs = async (customFilters = null, page = currentPage) => {
         try {
@@ -310,16 +327,16 @@ function Logs() {
                         </div>
 
                         <div className="table-container">
-                            <table className="logs-table">
+                            <table className="logs-table" aria-label="Security logs table">
                                 <thead>
                                     <tr>
-                                        <th>Time</th>
-                                        <th>Level</th>
-                                        <th>Event Type</th>
-                                        <th>Source</th>
-                                        <th>IP</th>
-                                        <th>User</th>
-                                        <th>Message</th>
+                                        <th scope="col">Time</th>
+                                        <th scope="col">Level</th>
+                                        <th scope="col">Event Type</th>
+                                        <th scope="col">Source</th>
+                                        <th scope="col">IP</th>
+                                        <th scope="col">User</th>
+                                        <th scope="col">Message</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -365,11 +382,22 @@ function Logs() {
                 )}
 
                 {selectedLog && (
-                    <div className="modal-overlay" onClick={handleCloseModal}>
+                    <div 
+                        className="modal-overlay" 
+                        onClick={handleCloseModal}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="modal-title"
+                    >
                         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                             <div className="modal-header">
-                                <h2>Log Details</h2>
-                                <button onClick={handleCloseModal} className="modal-close">
+                                <h2 id="modal-title">Log Details</h2>
+                                <button 
+                                    ref={closeButtonRef}
+                                    onClick={handleCloseModal} 
+                                    className="modal-close"
+                                    aria-label="Close modal"
+                                >
                                     &times;
                                 </button>
                             </div>
