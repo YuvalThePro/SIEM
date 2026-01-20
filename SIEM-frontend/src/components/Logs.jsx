@@ -11,6 +11,13 @@ function Logs() {
     const [logs, setLogs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [pageInfo, setPageInfo] = useState({
+        limit: 50,
+        skip: 0,
+        total: 0
+    });
+    const [currentPage, setCurrentPage] = useState(1);
+    const [selectedLog, setSelectedLog] = useState(null);
 
     const [filters, setFilters] = useState({
         from: '',
@@ -27,13 +34,17 @@ function Logs() {
         fetchLogs();
     }, []);
 
-    const fetchLogs = async (customFilters = null) => {
+    const fetchLogs = async (customFilters = null, page = currentPage) => {
         try {
             setLoading(true);
             setError('');
 
             const activeFilters = customFilters || filters;
-            const params = { limit: 50 };
+            const skip = (page - 1) * pageInfo.limit;
+            const params = {
+                limit: pageInfo.limit,
+                skip: skip
+            };
 
             if (activeFilters.from) params.from = activeFilters.from;
             if (activeFilters.to) params.to = activeFilters.to;
@@ -46,6 +57,7 @@ function Logs() {
 
             const data = await getLogs(params);
             setLogs(data.items);
+            setPageInfo(data.page);
         } catch (err) {
             setError(err.error || 'Failed to load logs');
         } finally {
@@ -61,7 +73,8 @@ function Logs() {
     };
 
     const handleApplyFilters = () => {
-        fetchLogs();
+        setCurrentPage(1);
+        fetchLogs(null, 1);
     };
 
     const handleClearFilters = () => {
@@ -76,12 +89,34 @@ function Logs() {
             q: ''
         };
         setFilters(clearedFilters);
-        fetchLogs(clearedFilters);
+        setCurrentPage(1);
+        fetchLogs(clearedFilters, 1);
+    };
+
+    const handleCloseModal = () => {
+        setSelectedLog(null);
     };
 
     const handleLogout = () => {
         logout();
         navigate('/login');
+    };
+
+    const handlePrevPage = () => {
+        if (currentPage > 1) {
+            const newPage = currentPage - 1;
+            setCurrentPage(newPage);
+            fetchLogs(null, newPage);
+        }
+    };
+
+    const handleNextPage = () => {
+        const totalPages = Math.ceil(pageInfo.total / pageInfo.limit);
+        if (currentPage < totalPages) {
+            const newPage = currentPage + 1;
+            setCurrentPage(newPage);
+            fetchLogs(null, newPage);
+        }
     };
 
     const formatTimestamp = (ts) => {
@@ -235,33 +270,84 @@ function Logs() {
                         <p>No logs found</p>
                     </div>
                 ) : (
-                    <div className="table-container">
-                        <table className="logs-table">
-                            <thead>
-                                <tr>
-                                    <th>Time</th>
-                                    <th>Level</th>
-                                    <th>Event Type</th>
-                                    <th>Source</th>
-                                    <th>IP</th>
-                                    <th>User</th>
-                                    <th>Message</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {logs.map((log) => (
-                                    <tr key={log._id}>
-                                        <td>{formatTimestamp(log.ts)}</td>
-                                        <td>{log.level}</td>
-                                        <td>{log.eventType}</td>
-                                        <td>{log.source}</td>
-                                        <td>{log.ip || '-'}</td>
-                                        <td>{log.user || '-'}</td>
-                                        <td>{log.message}</td>
+                    <>
+                        <div className="pagination-info">
+                            <span>
+                                Showing {pageInfo.skip + 1}–{Math.min(pageInfo.skip + pageInfo.limit, pageInfo.total)} of {pageInfo.total} logs
+                            </span>
+                        </div>
+
+                        <div className="table-container">
+                            <table className="logs-table">
+                                <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Level</th>
+                                        <th>Event Type</th>
+                                        <th>Source</th>
+                                        <th>IP</th>
+                                        <th>User</th>
+                                        <th>Message</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {logs.map((log) => (
+                                        <tr key={log._id} onClick={() => setSelectedLog(log)}>
+                                            <td>{formatTimestamp(log.ts)}</td>
+                                            <td>{log.level}</td>
+                                            <td>{log.eventType}</td>
+                                            <td>{log.source}</td>
+                                            <td>{log.ip || '-'}</td>
+                                            <td>{log.user || '-'}</td>
+                                            <td>{log.message}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div className="pagination-controls">
+                            <button
+                                onClick={handlePrevPage}
+                                className="btn btn-secondary"
+                                disabled={currentPage === 1}
+                            >
+                                Previous
+                            </button>
+                            <span className="pagination-page">
+                                Page {currentPage} of {Math.ceil(pageInfo.total / pageInfo.limit) || 1}
+                            </span>
+                            <button
+                                onClick={handleNextPage}
+                                className="btn btn-secondary"
+                                disabled={currentPage >= Math.ceil(pageInfo.total / pageInfo.limit)}
+                            >
+                                Next
+                            </button>
+                        </div>
+                    </>
+                )}
+
+                {selectedLog && (
+                    <div className="modal-overlay" onClick={handleCloseModal}>
+                        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                            <div className="modal-header">
+                                <h2>Log Details</h2>
+                                <button onClick={handleCloseModal} className="modal-close">
+                                    &times;
+                                </button>
+                            </div>
+                            <div className="modal-body">
+                                <div className="modal-section">
+                                    <h3>Summary</h3>
+                                    {/* Summary content will be added in next commit */}
+                                </div>
+                                <div className="modal-section">
+                                    <h3>Raw Data</h3>
+                                    {/* Raw data will be added in next commit */}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 )}
             </div>
