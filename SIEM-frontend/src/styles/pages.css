@@ -389,3 +389,61 @@
   font-family: inherit;
   color: inherit;
 }
+
+.level-badge {
+  display: inline-block;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.badge-info {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.badge-warn {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.badge-error {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.badge-critical {
+  background-color: #1f2937;
+  color: #fef2f2;
+}
+
+.logs-table tbody tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+.logs-table tbody tr:nth-child(even):hover {
+  background-color: var(--bg-secondary);
+}
+
+@media (max-width: 768px) {
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .logs-table {
+    min-width: 800px;
+  }
+
+  .filters-row {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-content {
+    width: 95%;
+    max-height: 95vh;
+  }
+}

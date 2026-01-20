@@ -132,7 +132,27 @@ function Logs() {
     };
 
     const formatTimestamp = (ts) => {
-        return new Date(ts).toLocaleString();
+        const date = new Date(ts);
+        const options = {
+            year: 'numeric',
+            month: 'short',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        };
+        return date.toLocaleString('en-US', options);
+    };
+
+    const getLevelBadgeClass = (level) => {
+        const levelMap = {
+            info: 'badge-info',
+            warn: 'badge-warn',
+            error: 'badge-error',
+            critical: 'badge-critical'
+        };
+        return levelMap[level] || 'badge-info';
     };
 
     return (
@@ -306,7 +326,11 @@ function Logs() {
                                     {logs.map((log) => (
                                         <tr key={log._id} onClick={() => setSelectedLog(log)}>
                                             <td>{formatTimestamp(log.ts)}</td>
-                                            <td>{log.level}</td>
+                                            <td>
+                                                <span className={`level-badge ${getLevelBadgeClass(log.level)}`}>
+                                                    {log.level}
+                                                </span>
+                                            </td>
                                             <td>{log.eventType}</td>
                                             <td>{log.source}</td>
                                             <td>{log.ip || '-'}</td>
