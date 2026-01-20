@@ -30,7 +30,7 @@ function Dashboard() {
                     <p><strong>Company:</strong> {tenant?.name}</p>
                     <p><strong>Tenant ID:</strong> {tenant?.id}</p>
                 </div>
-                
+
                 <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                     <button
                         onClick={() => navigate('/logs')}
@@ -53,7 +53,7 @@ function Dashboard() {
                         </button>
                     )}
                 </div>
-                
+
                 <button
                     onClick={handleLogout}
                     className="btn btn-danger"
