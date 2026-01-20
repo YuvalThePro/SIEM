@@ -27,11 +27,24 @@ function Logs() {
         fetchLogs();
     }, []);
 
-    const fetchLogs = async () => {
+    const fetchLogs = async (customFilters = null) => {
         try {
             setLoading(true);
             setError('');
-            const data = await getLogs({ limit: 50 });
+
+            const activeFilters = customFilters || filters;
+            const params = { limit: 50 };
+
+            if (activeFilters.from) params.from = activeFilters.from;
+            if (activeFilters.to) params.to = activeFilters.to;
+            if (activeFilters.level) params.level = activeFilters.level;
+            if (activeFilters.source) params.source = activeFilters.source;
+            if (activeFilters.eventType) params.eventType = activeFilters.eventType;
+            if (activeFilters.ip) params.ip = activeFilters.ip;
+            if (activeFilters.user) params.user = activeFilters.user;
+            if (activeFilters.q) params.q = activeFilters.q;
+
+            const data = await getLogs(params);
             setLogs(data.items);
         } catch (err) {
             setError(err.error || 'Failed to load logs');
@@ -52,7 +65,7 @@ function Logs() {
     };
 
     const handleClearFilters = () => {
-        setFilters({
+        const clearedFilters = {
             from: '',
             to: '',
             level: '',
@@ -61,8 +74,9 @@ function Logs() {
             ip: '',
             user: '',
             q: ''
-        });
-        fetchLogs();
+        };
+        setFilters(clearedFilters);
+        fetchLogs(clearedFilters);
     };
 
     const handleLogout = () => {
