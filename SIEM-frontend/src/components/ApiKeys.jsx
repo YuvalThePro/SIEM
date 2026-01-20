@@ -8,7 +8,6 @@ function ApiKeys() {
     const { user, tenant, logout } = useAuth();
     const navigate = useNavigate();
 
-    // State management
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -18,7 +17,6 @@ function ApiKeys() {
         navigate('/login');
     };
 
-    // Fetch API keys on mount
     useEffect(() => {
         fetchApiKeys();
     }, []);
@@ -62,14 +60,12 @@ function ApiKeys() {
                     Manage ingest API keys for <strong>{tenant?.name}</strong>
                 </p>
 
-                {/* Loading state */}
                 {loading && (
                     <div className="loading-container">
                         <p>Loading API keys...</p>
                     </div>
                 )}
 
-                {/* Error state */}
                 {error && (
                     <div className="error-container">
                         <p className="error-message">{error}</p>
@@ -79,14 +75,12 @@ function ApiKeys() {
                     </div>
                 )}
 
-                {/* Empty state */}
                 {!loading && !error && items.length === 0 && (
                     <div className="empty-state">
                         <p>No API keys yet. Create one to start ingesting logs.</p>
                     </div>
                 )}
 
-                {/* API Keys table */}
                 {!loading && !error && items.length > 0 && (
                     <div className="table-container">
                         <table className="data-table">
