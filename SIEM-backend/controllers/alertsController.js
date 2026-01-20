@@ -1,4 +1,5 @@
 import Alert from '../models/Alert.js';
+import { validationResult } from 'express-validator';
 
 /**
  * Get alerts with filtering and pagination
@@ -90,22 +91,17 @@ export const getAlerts = async (req, res) => {
  */
 export const updateAlertStatus = async (req, res) => {
     try {
+        // Check for validation errors
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({
+                error: errors.array()[0].msg
+            });
+        }
+
         const { tenantId, userId } = req.user;
         const { id } = req.params;
         const { status } = req.body;
-
-        // Validate status
-        if (!status) {
-            return res.status(400).json({
-                error: 'Status is required'
-            });
-        }
-
-        if (!['open', 'closed'].includes(status)) {
-            return res.status(400).json({
-                error: 'Status must be either "open" or "closed"'
-            });
-        }
 
         // Find alert and verify tenant ownership
         const alert = await Alert.findOne({
