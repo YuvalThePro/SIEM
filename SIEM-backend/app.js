@@ -6,6 +6,7 @@ import connectDB from './config/db.js';
 import authRouter from './routes/auth.js';
 import logsRouter from './routes/logs.js';
 import indexRouter from './routes/index.js';
+import apiKeysRouter from './routes/apiKeys.js';
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use('/api/auth', authRouter);
 app.use('/api/logs', logsRouter);
+app.use('/api/api-keys', apiKeysRouter);
 app.use('/api', indexRouter);
 
 app.use((req, res) => {
