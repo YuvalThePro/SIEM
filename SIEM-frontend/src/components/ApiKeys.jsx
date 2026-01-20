@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import Navigation from './Navigation';
 import { getApiKeys, createApiKey, revokeApiKey } from '../services/api';
 import '../styles/pages.css';
 
 function ApiKeys() {
-    const { user, tenant, logout } = useAuth();
-    const navigate = useNavigate();
+    const { tenant } = useAuth();
 
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -24,11 +23,6 @@ function ApiKeys() {
     const [revokeLoadingId, setRevokeLoadingId] = useState(null);
     const [showRevokeConfirm, setShowRevokeConfirm] = useState(false);
     const [keyToRevoke, setKeyToRevoke] = useState(null);
-
-    const handleLogout = () => {
-        logout();
-        navigate('/login');
-    };
 
     useEffect(() => {
         fetchApiKeys();
@@ -129,186 +123,188 @@ function ApiKeys() {
     };
 
     return (
-        <div className="container page-container">
-            <div className="page-card">
-                <div className="page-header">
-                    <h1>API Keys</h1>
-                    <button onClick={handleLogout} className="btn btn-danger">
-                        Logout
-                    </button>
-                </div>
-                <p className="page-subtitle">
-                    Manage ingest API keys for <strong>{tenant?.name}</strong>
-                </p>
+        <div className="app-layout">
+            <Navigation />
+            <div className="main-content">
+                <div className="container">
+                    <div className="page-card">
+                        <div className="page-header">
+                            <h1>API Key Management</h1>
+                        </div>
+                        <p className="page-subtitle">
+                            Manage ingest API keys for <strong>{tenant?.name}</strong>
+                        </p>
 
-                <div style={{ marginTop: '1.5rem', marginBottom: '1rem' }}>
-                    <button onClick={handleCreateClick} className="btn btn-primary">
-                        + Create API Key
-                    </button>
-                </div>
+                        <div style={{ marginTop: '1.5rem', marginBottom: '1rem' }}>
+                            <button onClick={handleCreateClick} className="btn btn-primary">
+                                + Create API Key
+                            </button>
+                        </div>
 
-                {loading && (
-                    <div className="loading-container">
-                        <p>Loading API keys...</p>
-                    </div>
-                )}
+                        {loading && (
+                            <div className="loading-container">
+                                <p>Loading API keys...</p>
+                            </div>
+                        )}
 
-                {error && (
-                    <div className="error-container">
-                        <p className="error-message">{error}</p>
-                        <button onClick={fetchApiKeys} className="btn btn-secondary">
-                            Retry
-                        </button>
-                    </div>
-                )}
+                        {error && (
+                            <div className="error-container">
+                                <p className="error-message">{error}</p>
+                                <button onClick={fetchApiKeys} className="btn btn-secondary">
+                                    Retry
+                                </button>
+                            </div>
+                        )}
 
-                {!loading && !error && items.length === 0 && (
-                    <div className="empty-state">
-                        <p>No API keys yet. Create one to start ingesting logs.</p>
-                    </div>
-                )}
+                        {!loading && !error && items.length === 0 && (
+                            <div className="empty-state">
+                                <p>No API keys yet. Create one to start ingesting logs.</p>
+                            </div>
+                        )}
 
-                {!loading && !error && items.length > 0 && (
-                    <div className="table-container">
-                        <table className="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Status</th>
-                                    <th>Created</th>
-                                    <th>Last Used</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {items.map((key) => (
-                                    <tr key={key.id}>
-                                        <td>
-                                            <strong>{key.name}</strong>
-                                        </td>
-                                        <td>
-                                            <span className={`status-badge ${key.enabled ? 'status-active' : 'status-revoked'}`}>
-                                                {key.enabled ? 'Active' : 'Revoked'}
-                                            </span>
-                                        </td>
-                                        <td>{formatDate(key.createdAt)}</td>
-                                        <td>{formatDate(key.lastUsed)}</td>
-                                        <td>
+                        {!loading && !error && items.length > 0 && (
+                            <div className="table-container">
+                                <table className="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Status</th>
+                                            <th>Created</th>
+                                            <th>Last Used</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {items.map((key) => (
+                                            <tr key={key.id}>
+                                                <td>
+                                                    <strong>{key.name}</strong>
+                                                </td>
+                                                <td>
+                                                    <span className={`status-badge ${key.enabled ? 'status-active' : 'status-revoked'}`}>
+                                                        {key.enabled ? 'Active' : 'Revoked'}
+                                                    </span>
+                                                </td>
+                                                <td>{formatDate(key.createdAt)}</td>
+                                                <td>{formatDate(key.lastUsed)}</td>
+                                                <td>
+                                                    <button
+                                                        className="btn btn-sm btn-danger"
+                                                        disabled={!key.enabled || revokeLoadingId === key.id}
+                                                        onClick={() => handleRevokeClick(key)}
+                                                    >
+                                                        {revokeLoadingId === key.id ? 'Revoking...' : 'Revoke'}
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+
+                        {showCreateModal && (
+                            <div className="modal-overlay" onClick={() => setShowCreateModal(false)}>
+                                <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                                    <h2>Create API Key</h2>
+                                    <form onSubmit={handleCreateSubmit}>
+                                        <div className="form-group">
+                                            <label htmlFor="keyName">Name *</label>
+                                            <input
+                                                type="text"
+                                                id="keyName"
+                                                value={newKeyName}
+                                                onChange={(e) => setNewKeyName(e.target.value)}
+                                                placeholder="e.g., prod, staging, web-server"
+                                                maxLength={100}
+                                                disabled={creating}
+                                                autoFocus
+                                            />
+                                            <small>Give this key a descriptive name (1-100 characters)</small>
+                                        </div>
+                                        {createError && (
+                                            <p className="error-message">{createError}</p>
+                                        )}
+                                        <div className="modal-actions">
                                             <button
-                                                className="btn btn-sm btn-danger"
-                                                disabled={!key.enabled || revokeLoadingId === key.id}
-                                                onClick={() => handleRevokeClick(key)}
+                                                type="button"
+                                                onClick={() => setShowCreateModal(false)}
+                                                className="btn btn-secondary"
+                                                disabled={creating}
                                             >
-                                                {revokeLoadingId === key.id ? 'Revoking...' : 'Revoke'}
+                                                Cancel
                                             </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
-
-                {showCreateModal && (
-                    <div className="modal-overlay" onClick={() => setShowCreateModal(false)}>
-                        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                            <h2>Create API Key</h2>
-                            <form onSubmit={handleCreateSubmit}>
-                                <div className="form-group">
-                                    <label htmlFor="keyName">Name *</label>
-                                    <input
-                                        type="text"
-                                        id="keyName"
-                                        value={newKeyName}
-                                        onChange={(e) => setNewKeyName(e.target.value)}
-                                        placeholder="e.g., prod, staging, web-server"
-                                        maxLength={100}
-                                        disabled={creating}
-                                        autoFocus
-                                    />
-                                    <small>Give this key a descriptive name (1-100 characters)</small>
+                                            <button
+                                                type="submit"
+                                                className="btn btn-primary"
+                                                disabled={creating || !newKeyName.trim()}
+                                            >
+                                                {creating ? 'Creating...' : 'Create'}
+                                            </button>
+                                        </div>
+                                    </form>
                                 </div>
-                                {createError && (
-                                    <p className="error-message">{createError}</p>
-                                )}
-                                <div className="modal-actions">
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowCreateModal(false)}
-                                        className="btn btn-secondary"
-                                        disabled={creating}
-                                    >
-                                        Cancel
+                            </div>
+                        )}
+
+                        {showRawKeyModal && (
+                            <div className="modal-overlay">
+                                <div className="modal-content">
+                                    <h2>API Key Created!</h2>
+                                    <div className="warning-box">
+                                        <strong>⚠️ Important:</strong> Save this key now. You won't see it again.
+                                    </div>
+                                    <div className="key-display">
+                                        <code>{rawKeyValue}</code>
+                                    </div>
+                                    <button onClick={handleCopyKey} className="btn btn-secondary" style={{ width: '100%', marginBottom: '1rem' }}>
+                                        {copiedMessage || 'Copy to Clipboard'}
                                     </button>
                                     <button
-                                        type="submit"
+                                        onClick={() => {
+                                            setShowRawKeyModal(false);
+                                            setRawKeyValue('');
+                                            setCopiedMessage('');
+                                        }}
                                         className="btn btn-primary"
-                                        disabled={creating || !newKeyName.trim()}
+                                        style={{ width: '100%' }}
                                     >
-                                        {creating ? 'Creating...' : 'Create'}
+                                        I've Saved the Key
                                     </button>
                                 </div>
-                            </form>
-                        </div>
-                    </div>
-                )}
+                            </div>
+                        )}
 
-                {showRawKeyModal && (
-                    <div className="modal-overlay">
-                        <div className="modal-content">
-                            <h2>API Key Created!</h2>
-                            <div className="warning-box">
-                                <strong>⚠️ Important:</strong> Save this key now. You won't see it again.
+                        {showRevokeConfirm && keyToRevoke && (
+                            <div className="modal-overlay" onClick={() => setShowRevokeConfirm(false)}>
+                                <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                                    <h2>Revoke API Key</h2>
+                                    <p>Are you sure you want to revoke key <strong>'{keyToRevoke.name}'</strong>?</p>
+                                    <div className="warning-box">
+                                        <strong>⚠️ Warning:</strong> Ingest will stop working for systems using this key.
+                                    </div>
+                                    <div className="modal-actions">
+                                        <button
+                                            onClick={() => {
+                                                setShowRevokeConfirm(false);
+                                                setKeyToRevoke(null);
+                                            }}
+                                            className="btn btn-secondary"
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            onClick={handleRevokeConfirm}
+                                            className="btn btn-danger"
+                                        >
+                                            Revoke Key
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="key-display">
-                                <code>{rawKeyValue}</code>
-                            </div>
-                            <button onClick={handleCopyKey} className="btn btn-secondary" style={{ width: '100%', marginBottom: '1rem' }}>
-                                {copiedMessage || 'Copy to Clipboard'}
-                            </button>
-                            <button
-                                onClick={() => {
-                                    setShowRawKeyModal(false);
-                                    setRawKeyValue('');
-                                    setCopiedMessage('');
-                                }}
-                                className="btn btn-primary"
-                                style={{ width: '100%' }}
-                            >
-                                I've Saved the Key
-                            </button>
-                        </div>
+                        )}
                     </div>
-                )}
-
-                {showRevokeConfirm && keyToRevoke && (
-                    <div className="modal-overlay" onClick={() => setShowRevokeConfirm(false)}>
-                        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                            <h2>Revoke API Key</h2>
-                            <p>Are you sure you want to revoke key <strong>'{keyToRevoke.name}'</strong>?</p>
-                            <div className="warning-box">
-                                <strong>⚠️ Warning:</strong> Ingest will stop working for systems using this key.
-                            </div>
-                            <div className="modal-actions">
-                                <button
-                                    onClick={() => {
-                                        setShowRevokeConfirm(false);
-                                        setKeyToRevoke(null);
-                                    }}
-                                    className="btn btn-secondary"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    onClick={handleRevokeConfirm}
-                                    className="btn btn-danger"
-                                >
-                                    Revoke Key
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
+                </div>
             </div>
         </div>
     );

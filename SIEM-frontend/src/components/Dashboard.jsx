@@ -1,66 +1,87 @@
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import Navigation from './Navigation';
+import '../styles/pages.css';
 
 function Dashboard() {
-    const { user, tenant, logout } = useAuth();
-    const navigate = useNavigate();
-
-    const handleLogout = () => {
-        logout();
-        navigate('/login');
-    };
+    const { user, tenant } = useAuth();
 
     return (
-        <div className="container" style={{ padding: '2rem' }}>
-            <div style={{
-                background: 'white',
-                borderRadius: '0.5rem',
-                padding: '2rem',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-            }}>
-                <h1>Dashboard</h1>
-                <div style={{ marginTop: '1.5rem' }}>
-                    <h3>User Information</h3>
-                    <p><strong>Email:</strong> {user?.email}</p>
-                    <p><strong>Role:</strong> {user?.role}</p>
-                    <p><strong>User ID:</strong> {user?.id}</p>
-                </div>
-                <div style={{ marginTop: '1.5rem' }}>
-                    <h3>Tenant Information</h3>
-                    <p><strong>Company:</strong> {tenant?.name}</p>
-                    <p><strong>Tenant ID:</strong> {tenant?.id}</p>
-                </div>
+        <div className="app-layout">
+            <Navigation />
+            <div className="main-content">
+                <div className="container">
+                    <div className="page-card">
+                        <div className="dashboard-welcome">
+                            <h1>Welcome to Your SIEM Dashboard</h1>
+                            <p className="welcome-subtitle">
+                                Monitor your security events and manage your infrastructure
+                            </p>
+                        </div>
 
-                <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                    <button
-                        onClick={() => navigate('/logs')}
-                        className="btn btn-primary"
-                    >
-                        View Logs
-                    </button>
-                    <button
-                        onClick={() => navigate('/alerts')}
-                        className="btn btn-primary"
-                    >
-                        View Alerts
-                    </button>
-                    {user?.role === 'admin' && (
-                        <button
-                            onClick={() => navigate('/api-keys')}
-                            className="btn btn-secondary"
-                        >
-                            API Keys
-                        </button>
-                    )}
-                </div>
+                        <div className="dashboard-grid">
+                            <div className="info-card">
+                                <div className="info-card-header">
+                                    <h3>User Information</h3>
+                                </div>
+                                <div className="info-card-content">
+                                    <div className="info-item">
+                                        <span className="info-label">Email:</span>
+                                        <span className="info-value">{user?.email}</span>
+                                    </div>
+                                    <div className="info-item">
+                                        <span className="info-label">Role:</span>
+                                        <span className="info-value">
+                                            <span className={`role-badge role-${user?.role}`}>
+                                                {user?.role}
+                                            </span>
+                                        </span>
+                                    </div>
+                                    <div className="info-item">
+                                        <span className="info-label">User ID:</span>
+                                        <span className="info-value code">{user?.id}</span>
+                                    </div>
+                                </div>
+                            </div>
 
-                <button
-                    onClick={handleLogout}
-                    className="btn btn-danger"
-                    style={{ marginTop: '2rem' }}
-                >
-                    Logout
-                </button>
+                            <div className="info-card">
+                                <div className="info-card-header">
+                                    <h3>Tenant Information</h3>
+                                </div>
+                                <div className="info-card-content">
+                                    <div className="info-item">
+                                        <span className="info-label">Company:</span>
+                                        <span className="info-value">{tenant?.name}</span>
+                                    </div>
+                                    <div className="info-item">
+                                        <span className="info-label">Tenant ID:</span>
+                                        <span className="info-value code">{tenant?.id}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="dashboard-stats">
+                            <div className="stat-card">
+                                <div className="stat-info">
+                                    <div className="stat-label">Total Logs</div>
+                                    <div className="stat-value">-</div>
+                                </div>
+                            </div>
+                            <div className="stat-card">
+                                <div className="stat-info">
+                                    <div className="stat-label">Active Alerts</div>
+                                    <div className="stat-value">-</div>
+                                </div>
+                            </div>
+                            <div className="stat-card">
+                                <div className="stat-info">
+                                    <div className="stat-label">System Status</div>
+                                    <div className="stat-value status-active">Active</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );

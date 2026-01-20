@@ -1,30 +1,39 @@
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import Navigation from './Navigation';
 import '../styles/pages.css';
 
 function Alerts() {
-    const { user, logout } = useAuth();
-    const navigate = useNavigate();
-
-    const handleLogout = () => {
-        logout();
-        navigate('/login');
-    };
+    const { tenant } = useAuth();
 
     return (
-        <div className="container page-container">
-            <div className="page-card">
-                <div className="page-header">
-                    <h1>Alerts</h1>
-                    <button onClick={handleLogout} className="btn btn-danger">
-                        Logout
-                    </button>
-                </div>
-                <p className="page-subtitle">
-                    Welcome, <strong>{user?.email}</strong>! This is the alerts page.
-                </p>
-                <div className="placeholder-box">
-                    <p>Alert management functionality will be implemented in future commits.</p>
+        <div className="app-layout">
+            <Navigation />
+            <div className="main-content">
+                <div className="container">
+                    <div className="page-card">
+                        <div className="page-header">
+                            <h1>Security Alerts</h1>
+                        </div>
+                        <p className="page-subtitle">
+                            Monitor critical security alerts and incidents for <strong>{tenant?.name}</strong>
+                        </p>
+
+                        <div className="alert-placeholder">
+                            <h3>Alert Management Coming Soon</h3>
+                            <p>Real-time security alert monitoring and incident response features will be available in the next release.</p>
+
+                            <div className="feature-preview">
+                                <h4>Upcoming Features:</h4>
+                                <ul>
+                                    <li>Real-time alert notifications</li>
+                                    <li>Alert severity classification</li>
+                                    <li>Incident response workflow</li>
+                                    <li>Alert correlation and aggregation</li>
+                                    <li>Custom alert rules and triggers</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
