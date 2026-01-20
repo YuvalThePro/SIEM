@@ -18,6 +18,7 @@ function Logs() {
     });
     const [currentPage, setCurrentPage] = useState(1);
     const [selectedLog, setSelectedLog] = useState(null);
+    const [copySuccess, setCopySuccess] = useState(false);
 
     const [filters, setFilters] = useState({
         from: '',
@@ -95,6 +96,17 @@ function Logs() {
 
     const handleCloseModal = () => {
         setSelectedLog(null);
+        setCopySuccess(false);
+    };
+
+    const handleCopyJSON = async () => {
+        try {
+            await navigator.clipboard.writeText(JSON.stringify(selectedLog.raw, null, 2));
+            setCopySuccess(true);
+            setTimeout(() => setCopySuccess(false), 2000);
+        } catch (err) {
+            console.error('Failed to copy:', err);
+        }
     };
 
     const handleLogout = () => {
@@ -340,11 +352,47 @@ function Logs() {
                             <div className="modal-body">
                                 <div className="modal-section">
                                     <h3>Summary</h3>
-                                    {/* Summary content will be added in next commit */}
+                                    <div className="log-summary">
+                                        <div className="log-summary-row">
+                                            <span className="log-summary-label">Time:</span>
+                                            <span className="log-summary-value">{formatTimestamp(selectedLog.ts)}</span>
+                                        </div>
+                                        <div className="log-summary-row">
+                                            <span className="log-summary-label">Level:</span>
+                                            <span className="log-summary-value">{selectedLog.level}</span>
+                                        </div>
+                                        <div className="log-summary-row">
+                                            <span className="log-summary-label">Event Type:</span>
+                                            <span className="log-summary-value">{selectedLog.eventType}</span>
+                                        </div>
+                                        <div className="log-summary-row">
+                                            <span className="log-summary-label">Source:</span>
+                                            <span className="log-summary-value">{selectedLog.source}</span>
+                                        </div>
+                                        <div className="log-summary-row">
+                                            <span className="log-summary-label">IP:</span>
+                                            <span className="log-summary-value">{selectedLog.ip || '-'}</span>
+                                        </div>
+                                        <div className="log-summary-row">
+                                            <span className="log-summary-label">User:</span>
+                                            <span className="log-summary-value">{selectedLog.user || '-'}</span>
+                                        </div>
+                                        <div className="log-summary-row">
+                                            <span className="log-summary-label">Message:</span>
+                                            <span className="log-summary-value">{selectedLog.message}</span>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div className="modal-section">
-                                    <h3>Raw Data</h3>
-                                    {/* Raw data will be added in next commit */}
+                                    <div className="raw-header">
+                                        <h3>Raw Data</h3>
+                                        <button onClick={handleCopyJSON} className="btn btn-primary btn-sm">
+                                            {copySuccess ? 'Copied!' : 'Copy JSON'}
+                                        </button>
+                                    </div>
+                                    <pre className="raw-json">
+                                        <code>{JSON.stringify(selectedLog.raw, null, 2)}</code>
+                                    </pre>
                                 </div>
                             </div>
                         </div>
