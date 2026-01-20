@@ -14,30 +14,30 @@ function App() {
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        
-        <Route 
-          path="/dashboard" 
+
+        <Route
+          path="/dashboard"
           element={
             <ProtectedRoute>
               <Dashboard />
             </ProtectedRoute>
-          } 
+          }
         />
-        <Route 
-          path="/logs" 
+        <Route
+          path="/logs"
           element={
             <ProtectedRoute>
               <Logs />
             </ProtectedRoute>
-          } 
+          }
         />
-        <Route 
-          path="/alerts" 
+        <Route
+          path="/alerts"
           element={
             <ProtectedRoute>
               <Alerts />
             </ProtectedRoute>
-          } 
+          }
         />
       </Routes>
     </div>
