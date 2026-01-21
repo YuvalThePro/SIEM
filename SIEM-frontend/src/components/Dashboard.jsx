@@ -233,7 +233,7 @@ function Dashboard() {
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div><br />
 
                         <div className="filter-group">
                             <label htmlFor="range-select">Time Range:</label>
@@ -249,6 +249,7 @@ function Dashboard() {
                                 <option value="30d">Last 30 Days</option>
                             </select>
                         </div>
+                        <br />
 
                         <div className="dashboard-stats">
                             <div className="stat-card">
@@ -279,7 +280,7 @@ function Dashboard() {
                                     <div className="stat-value">{stats?.counts?.byLevel?.error || 0}</div>
                                 </div>
                             </div>
-                        </div>
+                        </div><br />
 
                         <div className="dashboard-grid">
                             <div className="info-card">
@@ -383,7 +384,7 @@ function Dashboard() {
                                     </div>
                                 )}
                             </div>
-                        </div>
+                        </div><br />
 
                         <div className="info-card">
                             <div className="info-card-header">
