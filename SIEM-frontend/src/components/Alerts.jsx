@@ -16,6 +16,7 @@ function Alerts() {
         total: 0
     });
     const [currentPage, setCurrentPage] = useState(1);
+    const [selectedAlert, setSelectedAlert] = useState(null);
 
     const [filters, setFilters] = useState({
         status: '',
@@ -77,6 +78,10 @@ function Alerts() {
         setFilters(clearedFilters);
         setCurrentPage(1);
         fetchAlerts(clearedFilters, 1);
+    };
+
+    const handleCloseModal = () => {
+        setSelectedAlert(null);
     };
 
     const handlePrevPage = () => {
@@ -257,7 +262,7 @@ function Alerts() {
                                         </thead>
                                         <tbody>
                                             {alerts.map((alert) => (
-                                                <tr key={alert.id}>
+                                                <tr key={alert.id} onClick={() => setSelectedAlert(alert)}>
                                                     <td>{formatTimestamp(alert.ts)}</td>
                                                     <td>{alert.ruleName}</td>
                                                     <td>
@@ -298,6 +303,53 @@ function Alerts() {
                                     </button>
                                 </div>
                             </>
+                        )}
+
+                        {selectedAlert && (
+                            <div 
+                                className="modal-overlay" 
+                                onClick={handleCloseModal}
+                                role="dialog"
+                                aria-modal="true"
+                                aria-labelledby="alert-modal-title"
+                            >
+                                <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                                    <div className="modal-header">
+                                        <div className="alert-modal-header-content">
+                                            <h2 id="alert-modal-title">{selectedAlert.ruleName}</h2>
+                                            <div className="alert-modal-badges">
+                                                <span className={`severity-badge ${getSeverityBadgeClass(selectedAlert.severity)}`}>
+                                                    {selectedAlert.severity}
+                                                </span>
+                                                <span className={`status-badge ${getStatusBadgeClass(selectedAlert.status)}`}>
+                                                    {selectedAlert.status}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <button 
+                                            onClick={handleCloseModal} 
+                                            className="modal-close"
+                                            aria-label="Close modal"
+                                        >
+                                            &times;
+                                        </button>
+                                    </div>
+                                    <div className="modal-body">
+                                        <div className="modal-section">
+                                            <h3>Summary</h3>
+                                            {/* Summary content will be added in next commit */}
+                                        </div>
+                                        <div className="modal-section">
+                                            <h3>Entities</h3>
+                                            {/* Entities content will be added in next commit */}
+                                        </div>
+                                        <div className="modal-section">
+                                            <h3>Matched Logs</h3>
+                                            {/* Matched logs will be added in future commits */}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         )}
                     </div>
                 </div>
