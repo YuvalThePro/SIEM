@@ -96,12 +96,29 @@ function Alerts() {
         return () => clearTimeout(timeoutId);
     }, [filters.q]);
 
+    /**
+     * Fetch alerts from the API with filtering and pagination
+     * @param {Object|null} customFilters - Custom filters to apply, or null to use current filters
+     * @param {number} page - Page number to fetch
+     */
     const fetchAlerts = async (customFilters = null, page = currentPage) => {
         try {
             setLoading(true);
             setError('');
 
             const activeFilters = customFilters || filters;
+            
+            // Validate date range
+            if (activeFilters.from && activeFilters.to) {
+                const fromDate = new Date(activeFilters.from);
+                const toDate = new Date(activeFilters.to);
+                if (fromDate > toDate) {
+                    setError('Start date must be before end date');
+                    setLoading(false);
+                    return;
+                }
+            }
+
             const skip = (page - 1) * pageInfo.limit;
             const params = {
                 limit: pageInfo.limit,
@@ -112,15 +129,47 @@ function Alerts() {
             if (activeFilters.severity) params.severity = activeFilters.severity;
             if (activeFilters.from) params.from = activeFilters.from;
             if (activeFilters.to) params.to = activeFilters.to;
+            if (activeFilters.q) params.q = activeFilters.q;
 
             const data = await getAlerts(params);
             setAlerts(data.items);
             setPageInfo(data.page);
         } catch (err) {
-            setError(err.error || 'Failed to load alerts');
+            let errorMessage = 'Failed to load alerts';
+            
+            // Enhanced error messages based on error type
+            if (err.error) {
+                errorMessage = err.error;
+            } else if (err.message) {
+                if (err.message.includes('Network Error') || err.message.includes('ERR_NETWORK')) {
+                    errorMessage = 'Network error. Please check your connection and try again.';
+                } else if (err.message.includes('timeout')) {
+                    errorMessage = 'Request timeout. The server is taking too long to respond.';
+                } else {
+                    errorMessage = err.message;
+                }
+            }
+            
+            // Handle HTTP status codes
+            if (err.status === 403 || err.status === 401) {
+                errorMessage = 'Authentication failed. Please log in again.';
+            } else if (err.status === 404) {
+                errorMessage = 'Alerts endpoint not found. Please contact support.';
+            } else if (err.status === 500) {
+                errorMessage = 'Server error. Please try again later.';
+            }
+            
+            setError(errorMessage);
         } finally {
             setLoading(false);
         }
+    };
+
+    /**
+     * Handle retry button click - re-fetch alerts with current filters
+     */
+    const handleRetry = () => {
+        fetchAlerts();
     };
 
     const handleFilterChange = (e) => {
@@ -173,6 +222,11 @@ function Alerts() {
         }
     };
 
+    /**
+     * Format timestamp to human-readable date string
+     * @param {string|Date} ts - Timestamp to format
+     * @returns {string} Formatted timestamp
+     */
     const formatTimestamp = (ts) => {
         const date = new Date(ts);
         const options = {
@@ -187,6 +241,11 @@ function Alerts() {
         return date.toLocaleString('en-US', options);
     };
 
+    /**
+     * Format entities object to comma-separated string
+     * @param {Object} entities - Entities object with key-value pairs
+     * @returns {string} Formatted entities string or dash for empty
+     */
     const formatEntities = (entities) => {
         if (!entities || Object.keys(entities).length === 0) {
             return '-';
@@ -196,6 +255,11 @@ function Alerts() {
             .join(', ');
     };
 
+    /**
+     * Get CSS class for severity badge based on severity level
+     * @param {string} severity - Severity level (low, medium, high, critical)
+     * @returns {string} CSS class name
+     */
     const getSeverityBadgeClass = (severity) => {
         const severityMap = {
             low: 'badge-severity-low',
@@ -206,6 +270,11 @@ function Alerts() {
         return severityMap[severity] || 'badge-severity-low';
     };
 
+    /**
+     * Get CSS class for status badge based on alert status
+     * @param {string} status - Alert status (open, closed)
+     * @returns {string} CSS class name
+     */
     const getStatusBadgeClass = (status) => {
         const statusMap = {
             open: 'badge-status-open',
@@ -229,8 +298,13 @@ function Alerts() {
 
                         {error && (
                             <div className="error-banner">
-                                <div className="error-message">
-                                    {error}
+                                <div className="error-content">
+                                    <div className="error-message">
+                                        {error}
+                                    </div>
+                                    <button onClick={handleRetry} className="btn btn-retry">
+                                        Try Again
+                                    </button>
                                 </div>
                             </div>
                         )}
@@ -321,10 +395,27 @@ function Alerts() {
                         {loading ? (
                             <div className="loading-container">
                                 <div className="spinner"></div>
+                                <p className="loading-text">Loading alerts...</p>
                             </div>
                         ) : alerts.length === 0 ? (
                             <div className="empty-state">
-                                <p>No alerts found</p>
+                                <div className="empty-state-icon">🔍</div>
+                                <h3 className="empty-state-title">
+                                    {filters.status === 'open' ? 'No Open Alerts' : 
+                                     filters.status === 'closed' ? 'No Closed Alerts' : 
+                                     filters.q ? 'No Matching Alerts' : 'No Alerts Found'}
+                                </h3>
+                                <p className="empty-state-description">
+                                    {filters.status === 'open' ? 'All alerts have been resolved. Great work!' : 
+                                     filters.status === 'closed' ? 'No alerts have been closed yet.' : 
+                                     filters.q ? `No alerts match "${filters.q}". Try a different search term.` : 
+                                     'No security alerts detected. Your system is secure.'}
+                                </p>
+                                {(filters.status || filters.severity || filters.from || filters.to || filters.q) && (
+                                    <button onClick={handleClearFilters} className="btn btn-secondary">
+                                        Clear All Filters
+                                    </button>
+                                )}
                             </div>
                         ) : (
                             <>
