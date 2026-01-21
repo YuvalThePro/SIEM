@@ -57,6 +57,12 @@ function Dashboard() {
         fetchStats();
     };
 
+    const handleRangeChange = (e) => {
+        const newRange = e.target.value;
+        setRange(newRange);
+        fetchStats(newRange);
+    };
+
     return (
         <div className="app-layout">
             <Navigation />
@@ -112,24 +118,89 @@ function Dashboard() {
                             </div>
                         </div>
 
+                        <div className="filter-group">
+                            <label htmlFor="range-select">Time Range:</label>
+                            <select 
+                                id="range-select"
+                                value={range} 
+                                onChange={handleRangeChange}
+                                className="filter-select"
+                            >
+                                <option value="24h">Last 24 Hours</option>
+                                <option value="7d">Last 7 Days</option>
+                                <option value="30d">Last 30 Days</option>
+                            </select>
+                        </div>
+
                         <div className="dashboard-stats">
                             <div className="stat-card">
+                                <div className="stat-icon stat-icon-logs"></div>
                                 <div className="stat-info">
                                     <div className="stat-label">Total Logs</div>
-                                    <div className="stat-value">-</div>
+                                    <div className="stat-value">{stats?.counts?.totalLogs || 0}</div>
                                 </div>
                             </div>
                             <div className="stat-card">
+                                <div className="stat-icon stat-icon-alerts"></div>
                                 <div className="stat-info">
-                                    <div className="stat-label">Active Alerts</div>
-                                    <div className="stat-value">-</div>
+                                    <div className="stat-label">Open Alerts</div>
+                                    <div className="stat-value">{stats?.counts?.openAlerts || 0}</div>
                                 </div>
                             </div>
-                            <div className="stat-card status-active">
-                                <div className="stat-icon stat-icon-status">✓</div>
+                            <div className="stat-card">
+                                <div className="stat-icon stat-icon-alerts"></div>
                                 <div className="stat-info">
-                                    <div className="stat-label">System Status</div>
-                                    <div className="stat-value">Operational</div>
+                                    <div className="stat-label">Warnings</div>
+                                    <div className="stat-value">{stats?.counts?.byLevel?.warn || 0}</div>
+                                </div>
+                            </div>
+                            <div className="stat-card">
+                                <div className="stat-icon stat-icon-alerts"></div>
+                                <div className="stat-info">
+                                    <div className="stat-label">Errors</div>
+                                    <div className="stat-value">{stats?.counts?.byLevel?.error || 0}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="dashboard-grid">
+                            <div className="info-card">
+                                <div className="info-card-header">
+                                    <h3>Top IP Addresses</h3>
+                                </div>
+                                <div className="info-card-content">
+                                    {stats?.topIps && stats.topIps.length > 0 ? (
+                                        stats.topIps.map((item, index) => (
+                                            <div key={index} className="info-item">
+                                                <span className="info-label">{item.ip}</span>
+                                                <span className="info-value">{item.count}</span>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="info-item">
+                                            <span className="info-value">No data available</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="info-card">
+                                <div className="info-card-header">
+                                    <h3>Top Event Types</h3>
+                                </div>
+                                <div className="info-card-content">
+                                    {stats?.topEventTypes && stats.topEventTypes.length > 0 ? (
+                                        stats.topEventTypes.map((item, index) => (
+                                            <div key={index} className="info-item">
+                                                <span className="info-label">{item.eventType}</span>
+                                                <span className="info-value">{item.count}</span>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="info-item">
+                                            <span className="info-value">No data available</span>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
