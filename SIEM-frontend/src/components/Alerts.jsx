@@ -119,6 +119,24 @@ function Alerts() {
             .join(', ');
     };
 
+    const getSeverityBadgeClass = (severity) => {
+        const severityMap = {
+            low: 'badge-severity-low',
+            medium: 'badge-severity-medium',
+            high: 'badge-severity-high',
+            critical: 'badge-severity-critical'
+        };
+        return severityMap[severity] || 'badge-severity-low';
+    };
+
+    const getStatusBadgeClass = (status) => {
+        const statusMap = {
+            open: 'badge-status-open',
+            closed: 'badge-status-closed'
+        };
+        return statusMap[status] || 'badge-status-open';
+    };
+
     return (
         <div className="app-layout">
             <Navigation />
@@ -242,8 +260,16 @@ function Alerts() {
                                                 <tr key={alert.id}>
                                                     <td>{formatTimestamp(alert.ts)}</td>
                                                     <td>{alert.ruleName}</td>
-                                                    <td>{alert.severity}</td>
-                                                    <td>{alert.status}</td>
+                                                    <td>
+                                                        <span className={`severity-badge ${getSeverityBadgeClass(alert.severity)}`}>
+                                                            {alert.severity}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <span className={`status-badge ${getStatusBadgeClass(alert.status)}`}>
+                                                            {alert.status}
+                                                        </span>
+                                                    </td>
                                                     <td>{formatEntities(alert.entities)}</td>
                                                     <td>{alert.description}</td>
                                                 </tr>

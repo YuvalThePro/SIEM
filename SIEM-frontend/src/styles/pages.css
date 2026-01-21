@@ -1132,3 +1132,44 @@
 .alerts-table tbody tr:nth-child(even):hover {
   background-color: var(--bg-secondary);
 }
+
+.severity-badge,
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.badge-severity-low {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.badge-severity-medium {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.badge-severity-high {
+  background-color: #fed7aa;
+  color: #c2410c;
+}
+
+.badge-severity-critical {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.badge-status-open {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.badge-status-closed {
+  background-color: #e5e7eb;
+  color: #4b5563;
+}
