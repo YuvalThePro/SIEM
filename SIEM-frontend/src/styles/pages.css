@@ -1463,3 +1463,81 @@
   font-weight: 500;
   font-size: 0.875rem;
 }
+
+/* Keyboard Navigation Focus Styles */
+.alerts-table tbody tr:focus {
+  outline: 2px solid #667eea;
+  outline-offset: -2px;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+.matched-logs-table tbody tr:focus {
+  outline: 2px solid #667eea;
+  outline-offset: -2px;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+.modal-close:focus {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+.btn:focus,
+.btn-action:focus {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .severity-badge,
+  .status-badge {
+    border: 2px solid currentColor;
+  }
+  
+  .badge-severity-low {
+    background-color: #bfdbfe;
+    color: #1e3a8a;
+  }
+  
+  .badge-severity-medium {
+    background-color: #fde68a;
+    color: #78350f;
+  }
+  
+  .badge-severity-high {
+    background-color: #fdba74;
+    color: #9a3412;
+  }
+  
+  .badge-severity-critical {
+    background-color: #fca5a5;
+    color: #7f1d1d;
+  }
+  
+  .badge-status-open {
+    background-color: #a7f3d0;
+    color: #064e3b;
+  }
+  
+  .badge-status-closed {
+    background-color: #d1d5db;
+    color: #1f2937;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .btn-spinner {
+    animation: none;
+    opacity: 0.7;
+  }
+}

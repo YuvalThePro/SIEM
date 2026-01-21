@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import Navigation from './Navigation';
 import { getAlerts, updateAlertStatus } from '../services/alertsService';
@@ -7,6 +7,7 @@ import '../styles/pages.css';
 
 function Alerts() {
     const { tenant } = useAuth();
+    const modalCloseButtonRef = useRef(null);
 
     const [alerts, setAlerts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -55,6 +56,29 @@ function Alerts() {
         };
 
         fetchMatchedLogs();
+    }, [selectedAlert]);
+
+    // Keyboard navigation and accessibility
+    useEffect(() => {
+        const handleEscapeKey = (event) => {
+            if (event.key === 'Escape' && selectedAlert) {
+                handleCloseModal();
+            }
+        };
+
+        if (selectedAlert) {
+            // Add escape key listener
+            document.addEventListener('keydown', handleEscapeKey);
+            
+            // Auto-focus close button when modal opens
+            if (modalCloseButtonRef.current) {
+                modalCloseButtonRef.current.focus();
+            }
+
+            return () => {
+                document.removeEventListener('keydown', handleEscapeKey);
+            };
+        }
     }, [selectedAlert]);
 
     const fetchAlerts = async (customFilters = null, page = currentPage) => {
@@ -294,7 +318,19 @@ function Alerts() {
                                         </thead>
                                         <tbody>
                                             {alerts.map((alert) => (
-                                                <tr key={alert.id} onClick={() => setSelectedAlert(alert)}>
+                                                <tr 
+                                                    key={alert.id} 
+                                                    onClick={() => setSelectedAlert(alert)}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter' || e.key === ' ') {
+                                                            e.preventDefault();
+                                                            setSelectedAlert(alert);
+                                                        }
+                                                    }}
+                                                    tabIndex={0}
+                                                    role="button"
+                                                    aria-label={`View alert: ${alert.ruleName}`}
+                                                >
                                                     <td>{formatTimestamp(alert.ts)}</td>
                                                     <td>{alert.ruleName}</td>
                                                     <td>
@@ -359,6 +395,7 @@ function Alerts() {
                                             </div>
                                         </div>
                                         <button
+                                            ref={modalCloseButtonRef}
                                             onClick={handleCloseModal}
                                             className="modal-close"
                                             aria-label="Close modal"
@@ -421,14 +458,14 @@ function Alerts() {
                                                 <p className="empty-text">No matched logs found</p>
                                             ) : (
                                                 <div className="matched-logs-table-container">
-                                                    <table className="matched-logs-table">
+                                                    <table className="matched-logs-table" aria-label="Matched logs table">
                                                         <thead>
                                                             <tr>
-                                                                <th>Time</th>
-                                                                <th>Event Type</th>
-                                                                <th>IP</th>
-                                                                <th>User</th>
-                                                                <th>Message</th>
+                                                                <th scope="col">Time</th>
+                                                                <th scope="col">Event Type</th>
+                                                                <th scope="col">IP</th>
+                                                                <th scope="col">User</th>
+                                                                <th scope="col">Message</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -437,6 +474,16 @@ function Alerts() {
                                                                     <tr 
                                                                         key={log._id} 
                                                                         onClick={() => setExpandedLogId(expandedLogId === log._id ? null : log._id)}
+                                                                        onKeyDown={(e) => {
+                                                                            if (e.key === 'Enter' || e.key === ' ') {
+                                                                                e.preventDefault();
+                                                                                setExpandedLogId(expandedLogId === log._id ? null : log._id);
+                                                                            }
+                                                                        }}
+                                                                        tabIndex={0}
+                                                                        role="button"
+                                                                        aria-expanded={expandedLogId === log._id}
+                                                                        aria-label={`View log details: ${log.message}`}
                                                                         className={expandedLogId === log._id ? 'expanded' : ''}
                                                                     >
                                                                         <td>{formatTimestamp(log.ts)}</td>
