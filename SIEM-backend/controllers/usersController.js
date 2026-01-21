@@ -1,5 +1,6 @@
 import User from '../models/User.js';
 import { hashApiKey } from '../utils/crypto.js';
+import { validationResult } from 'express-validator';
 
 /**
  * Helper: Check if user would be the last admin in tenant
@@ -54,6 +55,13 @@ export const getUsers = async (req, res) => {
  */
 export const createUser = async (req, res) => {
     try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({
+                error: errors.array()[0].msg
+            });
+        }
+
         const { tenantId } = req.user;
         const { email, password, role } = req.body;
 
@@ -102,6 +110,13 @@ export const createUser = async (req, res) => {
  */
 export const updateUserRole = async (req, res) => {
     try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({
+                error: errors.array()[0].msg
+            });
+        }
+
         const { tenantId, userId } = req.user;
         const { id } = req.params;
         const { role } = req.body;
@@ -161,6 +176,13 @@ export const updateUserRole = async (req, res) => {
  */
 export const deleteUser = async (req, res) => {
     try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({
+                error: errors.array()[0].msg
+            });
+        }
+
         const { tenantId, userId } = req.user;
         const { id } = req.params;
 
