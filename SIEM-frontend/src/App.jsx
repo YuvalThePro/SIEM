@@ -5,6 +5,7 @@ import Dashboard from './components/Dashboard';
 import Logs from './components/Logs';
 import Alerts from './components/Alerts';
 import ApiKeys from './components/ApiKeys';
+import UserManagement from './components/UserManagement';
 import ProtectedRoute from './components/ProtectedRoute';
 import './styles/style.css';
 
@@ -43,8 +44,16 @@ function App() {
         <Route
           path="/api-keys"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredRole="admin">
               <ApiKeys />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/users"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <UserManagement />
             </ProtectedRoute>
           }
         />

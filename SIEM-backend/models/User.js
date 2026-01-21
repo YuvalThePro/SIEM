@@ -10,7 +10,6 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    unique: true,
     lowercase: true,
     trim: true
   },
@@ -29,6 +28,6 @@ const userSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-userSchema.index({ tenantId: 1, email: 1 });
+userSchema.index({ tenantId: 1, email: 1 }, { unique: true });
 
 export default mongoose.model('User', userSchema);

@@ -8,6 +8,7 @@ import logsRouter from './routes/logs.js';
 import alertsRouter from './routes/alerts.js';
 import indexRouter from './routes/index.js';
 import apiKeysRouter from './routes/apiKeys.js';
+import usersRouter from './routes/users.js';
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/logs', logsRouter);
 app.use('/api/alerts', alertsRouter);
 app.use('/api/api-keys', apiKeysRouter);
+app.use('/api/users', usersRouter);
 app.use('/api', indexRouter);
 
 app.use((req, res) => {

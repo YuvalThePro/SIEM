@@ -57,7 +57,6 @@ function Login() {
 
                 {error && (
                     <div className="error-message">
-                        <span>⚠️</span>
                         <span>{error}</span>
                     </div>
                 )}
