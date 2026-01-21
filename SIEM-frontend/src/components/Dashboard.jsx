@@ -81,6 +81,21 @@ function Dashboard() {
         return statusMap[status] || 'badge-status-open';
     };
 
+    const getLevelBadgeClass = (level) => {
+        const levelMap = {
+            info: 'badge-info',
+            warn: 'badge-warn',
+            error: 'badge-error',
+            critical: 'badge-critical'
+        };
+        return levelMap[level] || 'badge-info';
+    };
+
+    const truncateMessage = (message, maxLength = 60) => {
+        if (!message) return '';
+        return message.length > maxLength ? message.substring(0, maxLength) + '...' : message;
+    };
+
     const formatDateTime = (dateString) => {
         const date = new Date(dateString);
         return date.toLocaleString('en-US', {
@@ -272,6 +287,52 @@ function Dashboard() {
                                 ) : (
                                     <div className="info-item">
                                         <span className="info-value">No recent alerts</span>
+                                    </div>
+                                ) : (
+                                    <div className="info-item">
+                                        <span className="info-value">No recent alerts</span>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="info-card">
+                            <div className="info-card-header">
+                                <h3>Recent Log Activity</h3>
+                            </div>
+                            <div className="info-card-content">
+                                {stats?.recent?.logs && stats.recent.logs.length > 0 ? (
+                                    <div className="table-container">
+                                        <table className="alerts-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Time</th>
+                                                    <th>Level</th>
+                                                    <th>Event Type</th>
+                                                    <th>Source</th>
+                                                    <th>Message</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {stats.recent.logs.slice(0, 10).map((log) => (
+                                                    <tr key={log.id}>
+                                                        <td>{formatDateTime(log.timestamp)}</td>
+                                                        <td>
+                                                            <span className={`level-badge ${getLevelBadgeClass(log.level)}`}>
+                                                                {log.level}
+                                                            </span>
+                                                        </td>
+                                                        <td>{log.eventType}</td>
+                                                        <td>{log.source}</td>
+                                                        <td>{truncateMessage(log.message)}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                ) : (
+                                    <div className="info-item">
+                                        <span className="info-value">No recent logs</span>
                                     </div>
                                 )}
                             </div>
