@@ -17,15 +17,35 @@ function Alerts() {
     });
     const [currentPage, setCurrentPage] = useState(1);
 
+    const [filters, setFilters] = useState({
+        status: '',
+        severity: '',
+        from: '',
+        to: ''
+    });
+
     useEffect(() => {
         fetchAlerts();
     }, []);
 
-    const fetchAlerts = async () => {
+    const fetchAlerts = async (customFilters = null, page = currentPage) => {
         try {
             setLoading(true);
             setError('');
-            const data = await getAlerts({ limit: 25 });
+
+            const activeFilters = customFilters || filters;
+            const skip = (page - 1) * pageInfo.limit;
+            const params = {
+                limit: pageInfo.limit,
+                skip: skip
+            };
+
+            if (activeFilters.status) params.status = activeFilters.status;
+            if (activeFilters.severity) params.severity = activeFilters.severity;
+            if (activeFilters.from) params.from = activeFilters.from;
+            if (activeFilters.to) params.to = activeFilters.to;
+
+            const data = await getAlerts(params);
             setAlerts(data.items);
             setPageInfo(data.page);
         } catch (err) {
@@ -33,6 +53,30 @@ function Alerts() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleFilterChange = (e) => {
+        setFilters({
+            ...filters,
+            [e.target.name]: e.target.value
+        });
+    };
+
+    const handleApplyFilters = () => {
+        setCurrentPage(1);
+        fetchAlerts(null, 1);
+    };
+
+    const handleClearFilters = () => {
+        const clearedFilters = {
+            status: '',
+            severity: '',
+            from: '',
+            to: ''
+        };
+        setFilters(clearedFilters);
+        setCurrentPage(1);
+        fetchAlerts(clearedFilters, 1);
     };
 
     const formatTimestamp = (ts) => {
@@ -78,6 +122,75 @@ function Alerts() {
                                 </div>
                             </div>
                         )}
+
+                        <div className="filters-bar">
+                            <div className="filters-row">
+                                <div className="filter-group">
+                                    <label htmlFor="status" className="filter-label">Status</label>
+                                    <select
+                                        id="status"
+                                        name="status"
+                                        className="filter-input"
+                                        value={filters.status}
+                                        onChange={handleFilterChange}
+                                    >
+                                        <option value="">All</option>
+                                        <option value="open">Open</option>
+                                        <option value="closed">Closed</option>
+                                    </select>
+                                </div>
+
+                                <div className="filter-group">
+                                    <label htmlFor="severity" className="filter-label">Severity</label>
+                                    <select
+                                        id="severity"
+                                        name="severity"
+                                        className="filter-input"
+                                        value={filters.severity}
+                                        onChange={handleFilterChange}
+                                    >
+                                        <option value="">All</option>
+                                        <option value="low">Low</option>
+                                        <option value="medium">Medium</option>
+                                        <option value="high">High</option>
+                                        <option value="critical">Critical</option>
+                                    </select>
+                                </div>
+
+                                <div className="filter-group">
+                                    <label htmlFor="from" className="filter-label">From</label>
+                                    <input
+                                        type="datetime-local"
+                                        id="from"
+                                        name="from"
+                                        className="filter-input"
+                                        value={filters.from}
+                                        onChange={handleFilterChange}
+                                    />
+                                </div>
+
+                                <div className="filter-group">
+                                    <label htmlFor="to" className="filter-label">To</label>
+                                    <input
+                                        type="datetime-local"
+                                        id="to"
+                                        name="to"
+                                        className="filter-input"
+                                        value={filters.to}
+                                        onChange={handleFilterChange}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="filters-actions">
+                                <button onClick={handleApplyFilters} className="btn btn-primary">
+                                    Apply Filters
+                                </button>
+                                <button onClick={handleClearFilters} className="btn btn-secondary">
+                                    Clear Filters
+                                </button>
+                            </div>
+                        </div>
 
                         {loading ? (
                             <div className="loading-container">
