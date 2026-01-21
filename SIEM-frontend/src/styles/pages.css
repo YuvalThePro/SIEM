@@ -1250,3 +1250,126 @@
   margin: 0;
   padding: 1rem 0;
 }
+
+/* Matched Logs Table */
+.matched-logs-table-container {
+  margin-top: 0.5rem;
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+}
+
+.matched-logs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.matched-logs-table thead {
+  position: sticky;
+  top: 0;
+  background: var(--bg-secondary);
+  z-index: 1;
+}
+
+.matched-logs-table th {
+  padding: 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border-bottom: 2px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.matched-logs-table tbody tr {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.matched-logs-table tbody tr:hover {
+  background-color: var(--bg-secondary);
+}
+
+.matched-logs-table tbody tr.expanded {
+  background-color: #f0f9ff;
+}
+
+.matched-logs-table td {
+  padding: 0.625rem 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.matched-logs-table .log-message {
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.expanded-row {
+  background-color: #f9fafb !important;
+}
+
+.expanded-row:hover {
+  background-color: #f9fafb !important;
+}
+
+.expanded-row td {
+  padding: 0 !important;
+  border: none !important;
+}
+
+.log-raw-json {
+  padding: 1rem;
+  background: #1e293b;
+  color: #e2e8f0;
+  border-radius: var(--radius-md);
+  margin: 0.5rem;
+}
+
+.log-raw-json-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #334155;
+}
+
+.log-raw-json-header strong {
+  color: #94a3b8;
+  font-size: 0.875rem;
+}
+
+.close-raw-json {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.close-raw-json:hover {
+  background-color: #334155;
+  color: #e2e8f0;
+}
+
+.log-raw-json pre {
+  margin: 0;
+  overflow-x: auto;
+  font-family: 'Courier New', Consolas, Monaco, monospace;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}

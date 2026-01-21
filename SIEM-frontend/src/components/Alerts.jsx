@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import Navigation from './Navigation';
 import { getAlerts } from '../services/alertsService';
+import { getLogsByIds } from '../services/logsService';
 import '../styles/pages.css';
 
 function Alerts() {
@@ -17,6 +18,9 @@ function Alerts() {
     });
     const [currentPage, setCurrentPage] = useState(1);
     const [selectedAlert, setSelectedAlert] = useState(null);
+    const [matchedLogs, setMatchedLogs] = useState([]);
+    const [loadingLogs, setLoadingLogs] = useState(false);
+    const [expandedLogId, setExpandedLogId] = useState(null);
 
     const [filters, setFilters] = useState({
         status: '',
@@ -28,6 +32,27 @@ function Alerts() {
     useEffect(() => {
         fetchAlerts();
     }, []);
+
+    useEffect(() => {
+        const fetchMatchedLogs = async () => {
+            if (selectedAlert && selectedAlert.matchedLogIds && selectedAlert.matchedLogIds.length > 0) {
+                setLoadingLogs(true);
+                try {
+                    const logs = await getLogsByIds(selectedAlert.matchedLogIds);
+                    setMatchedLogs(logs);
+                } catch (err) {
+                    console.error('Failed to fetch matched logs:', err);
+                    setMatchedLogs([]);
+                } finally {
+                    setLoadingLogs(false);
+                }
+            } else {
+                setMatchedLogs([]);
+            }
+        };
+
+        fetchMatchedLogs();
+    }, [selectedAlert]);
 
     const fetchAlerts = async (customFilters = null, page = currentPage) => {
         try {
@@ -82,6 +107,8 @@ function Alerts() {
 
     const handleCloseModal = () => {
         setSelectedAlert(null);
+        setMatchedLogs([]);
+        setExpandedLogId(null);
     };
 
     const handlePrevPage = () => {
@@ -380,8 +407,66 @@ function Alerts() {
                                             )}
                                         </div>
                                         <div className="modal-section">
-                                            <h3>Matched Logs</h3>
-                                            {/* Matched logs will be added in future commits */}
+                                            <h3>Matched Logs ({matchedLogs.length})</h3>
+                                            {loadingLogs ? (
+                                                <div className="loading-container">
+                                                    <div className="spinner"></div>
+                                                </div>
+                                            ) : matchedLogs.length === 0 ? (
+                                                <p className="empty-text">No matched logs found</p>
+                                            ) : (
+                                                <div className="matched-logs-table-container">
+                                                    <table className="matched-logs-table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Time</th>
+                                                                <th>Event Type</th>
+                                                                <th>IP</th>
+                                                                <th>User</th>
+                                                                <th>Message</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {matchedLogs.map((log) => (
+                                                                <>
+                                                                    <tr 
+                                                                        key={log._id} 
+                                                                        onClick={() => setExpandedLogId(expandedLogId === log._id ? null : log._id)}
+                                                                        className={expandedLogId === log._id ? 'expanded' : ''}
+                                                                    >
+                                                                        <td>{formatTimestamp(log.ts)}</td>
+                                                                        <td>{log.eventType || '-'}</td>
+                                                                        <td>{log.ip || '-'}</td>
+                                                                        <td>{log.user || '-'}</td>
+                                                                        <td className="log-message">{log.message}</td>
+                                                                    </tr>
+                                                                    {expandedLogId === log._id && (
+                                                                        <tr className="expanded-row">
+                                                                            <td colSpan="5">
+                                                                                <div className="log-raw-json">
+                                                                                    <div className="log-raw-json-header">
+                                                                                        <strong>Raw Log Data</strong>
+                                                                                        <button 
+                                                                                            onClick={(e) => {
+                                                                                                e.stopPropagation();
+                                                                                                setExpandedLogId(null);
+                                                                                            }}
+                                                                                            className="close-raw-json"
+                                                                                        >
+                                                                                            ×
+                                                                                        </button>
+                                                                                    </div>
+                                                                                    <pre>{JSON.stringify(log, null, 2)}</pre>
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                    )}
+                                                                </>
+                                                            ))}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>

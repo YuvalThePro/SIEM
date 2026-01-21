@@ -10,6 +10,12 @@ export const getLogs = async (req, res) => {
         const { tenantId } = req.user;
         const query = { tenantId };
 
+        // Filter by IDs (for fetching matched logs)
+        if (req.query.ids) {
+            const ids = req.query.ids.split(',').map(id => id.trim());
+            query._id = { $in: ids };
+        }
+
         // Date range filter (from/to on ts field)
         if (req.query.from || req.query.to) {
             query.ts = {};

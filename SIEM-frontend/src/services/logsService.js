@@ -56,3 +56,36 @@ export const getLogs = async (filters = {}) => {
         throw error.response?.data || { error: 'Failed to fetch logs' };
     }
 };
+
+/**
+ * Fetch logs by their IDs
+ * @param {Array<string>} ids - Array of log IDs
+ * @returns {Promise<Array>} - Array of log objects
+ */
+export const getLogsByIds = async (ids) => {
+    try {
+        if (!ids || ids.length === 0) {
+            return [];
+        }
+
+        // Fetch logs in batches if many IDs
+        const batchSize = 100;
+        const batches = [];
+        
+        for (let i = 0; i < ids.length; i += batchSize) {
+            const batchIds = ids.slice(i, i + batchSize);
+            const params = {
+                ids: batchIds.join(','),
+                limit: batchSize
+            };
+            batches.push(api.get('/logs', { params }));
+        }
+
+        const responses = await Promise.all(batches);
+        const allLogs = responses.flatMap(response => response.data.items || []);
+        
+        return allLogs;
+    } catch (error) {
+        throw error.response?.data || { error: 'Failed to fetch logs by IDs' };
+    }
+};
