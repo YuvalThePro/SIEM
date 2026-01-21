@@ -39,6 +39,20 @@ export const getAlerts = async (req, res) => {
             query.severity = req.query.severity;
         }
 
+        // Search across ruleName, description, and entities
+        if (req.query.q) {
+            const searchRegex = { $regex: req.query.q, $options: 'i' };
+            query.$or = [
+                { ruleName: searchRegex },
+                { description: searchRegex },
+                // Search in entity values (convert object to string for search)
+                { 'entities.ip': searchRegex },
+                { 'entities.user': searchRegex },
+                { 'entities.hostname': searchRegex },
+                { 'entities.process': searchRegex }
+            ];
+        }
+
         const limit = Math.min(parseInt(req.query.limit) || 25, 100);
         const skip = parseInt(req.query.skip) || 0;
 

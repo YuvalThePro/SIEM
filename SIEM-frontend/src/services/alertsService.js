@@ -7,6 +7,7 @@ import api from './api';
  * @param {string} filters.severity - Alert severity (low, medium, high, critical)
  * @param {string} filters.from - Start date for alert filtering
  * @param {string} filters.to - End date for alert filtering
+ * @param {string} filters.q - Search query for ruleName, description, and entities
  * @param {number} filters.limit - Number of alerts per page
  * @param {number} filters.skip - Number of alerts to skip (for pagination)
  * @returns {Promise<{items: Array, page: {limit: number, skip: number, total: number}}>}
@@ -26,6 +27,9 @@ export const getAlerts = async (filters = {}) => {
         }
         if (filters.to) {
             params.to = filters.to;
+        }
+        if (filters.q) {
+            params.q = filters.q;
         }
         if (filters.limit) {
             params.limit = filters.limit;

@@ -30,7 +30,8 @@ function Alerts() {
         status: '',
         severity: '',
         from: '',
-        to: ''
+        to: '',
+        q: ''
     });
 
     useEffect(() => {
@@ -81,6 +82,20 @@ function Alerts() {
         }
     }, [selectedAlert]);
 
+    // Debounced search
+    useEffect(() => {
+        if (filters.q === '') {
+            return; // Don't trigger search for empty string on mount
+        }
+
+        const timeoutId = setTimeout(() => {
+            setCurrentPage(1);
+            fetchAlerts(filters, 1);
+        }, 500); // 500ms debounce
+
+        return () => clearTimeout(timeoutId);
+    }, [filters.q]);
+
     const fetchAlerts = async (customFilters = null, page = currentPage) => {
         try {
             setLoading(true);
@@ -125,7 +140,8 @@ function Alerts() {
             status: '',
             severity: '',
             from: '',
-            to: ''
+            to: '',
+            q: ''
         };
         setFilters(clearedFilters);
         setCurrentPage(1);
@@ -220,6 +236,20 @@ function Alerts() {
                         )}
 
                         <div className="filters-bar">
+                            <div className="filter-group filter-search">
+                                <label htmlFor="search" className="filter-label">Search</label>
+                                <input
+                                    type="text"
+                                    id="search"
+                                    name="q"
+                                    className="filter-input"
+                                    placeholder="Search alerts..."
+                                    value={filters.q}
+                                    onChange={handleFilterChange}
+                                    aria-label="Search alerts by rule name, description, or entities"
+                                />
+                            </div>
+
                             <div className="filters-row">
                                 <div className="filter-group">
                                     <label htmlFor="status" className="filter-label">Status</label>
