@@ -13,9 +13,10 @@ dist-ssr
 *.local
 
 # Editor directories and files
-.vscode/*
-!.vscode/extensions.json
+.vscode/
+**/.vscode/
 .idea
+**/.idea/
 .DS_Store
 *.suo
 *.ntvs*
@@ -66,10 +67,8 @@ Thumbs.db
 desktop.ini
 
 # Additional editor files
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
 .idea/
+**/.idea/
 *.swp
 *.swo
 *~
