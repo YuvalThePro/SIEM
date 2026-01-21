@@ -12,9 +12,9 @@ function Dashboard() {
                 <div className="container">
                     <div className="page-card">
                         <div className="dashboard-welcome">
-                            <h1>Welcome to Your SIEM Dashboard</h1>
+                            <h1>Welcome to Your Security Dashboard</h1>
                             <p className="welcome-subtitle">
-                                Monitor your security events and manage your infrastructure
+                                Monitor security events and manage your infrastructure in real-time
                             </p>
                         </div>
 
@@ -25,11 +25,11 @@ function Dashboard() {
                                 </div>
                                 <div className="info-card-content">
                                     <div className="info-item">
-                                        <span className="info-label">Email:</span>
+                                        <span className="info-label">Email :</span>
                                         <span className="info-value">{user?.email}</span>
                                     </div>
                                     <div className="info-item">
-                                        <span className="info-label">Role:</span>
+                                        <span className="info-label">Role :</span>
                                         <span className="info-value">
                                             <span className={`role-badge role-${user?.role}`}>
                                                 {user?.role}
@@ -37,7 +37,7 @@ function Dashboard() {
                                         </span>
                                     </div>
                                     <div className="info-item">
-                                        <span className="info-label">User ID:</span>
+                                        <span className="info-label">User ID :</span>
                                         <span className="info-value code">{user?.id}</span>
                                     </div>
                                 </div>
@@ -49,11 +49,11 @@ function Dashboard() {
                                 </div>
                                 <div className="info-card-content">
                                     <div className="info-item">
-                                        <span className="info-label">Company:</span>
+                                        <span className="info-label">Company :</span>
                                         <span className="info-value">{tenant?.name}</span>
                                     </div>
                                     <div className="info-item">
-                                        <span className="info-label">Tenant ID:</span>
+                                        <span className="info-label">Tenant ID :</span>
                                         <span className="info-value code">{tenant?.id}</span>
                                     </div>
                                 </div>
@@ -73,10 +73,11 @@ function Dashboard() {
                                     <div className="stat-value">-</div>
                                 </div>
                             </div>
-                            <div className="stat-card">
+                            <div className="stat-card status-active">
+                                <div className="stat-icon stat-icon-status">✓</div>
                                 <div className="stat-info">
                                     <div className="stat-label">System Status</div>
-                                    <div className="stat-value status-active">Active</div>
+                                    <div className="stat-value">Operational</div>
                                 </div>
                             </div>
                         </div>

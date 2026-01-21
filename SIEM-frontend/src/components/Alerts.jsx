@@ -70,7 +70,7 @@ function Alerts() {
         if (selectedAlert) {
             // Add escape key listener
             document.addEventListener('keydown', handleEscapeKey);
-            
+
             // Auto-focus close button when modal opens
             if (modalCloseButtonRef.current) {
                 modalCloseButtonRef.current.focus();
@@ -107,7 +107,7 @@ function Alerts() {
             setError('');
 
             const activeFilters = customFilters || filters;
-            
+
             // Validate date range
             if (activeFilters.from && activeFilters.to) {
                 const fromDate = new Date(activeFilters.from);
@@ -136,7 +136,7 @@ function Alerts() {
             setPageInfo(data.page);
         } catch (err) {
             let errorMessage = 'Failed to load alerts';
-            
+
             if (err.error) {
                 errorMessage = err.error;
             } else if (err.message) {
@@ -148,7 +148,7 @@ function Alerts() {
                     errorMessage = err.message;
                 }
             }
-            
+
             if (err.status === 403 || err.status === 401) {
                 errorMessage = 'Authentication failed. Please log in again.';
             } else if (err.status === 404) {
@@ -156,7 +156,7 @@ function Alerts() {
             } else if (err.status === 500) {
                 errorMessage = 'Server error. Please try again later.';
             }
-            
+
             setError(errorMessage);
         } finally {
             setLoading(false);
@@ -201,6 +201,22 @@ function Alerts() {
         setExpandedLogId(null);
         setUpdateSuccess('');
         setUpdateError('');
+    };
+
+    const handleUpdateStatus = async () => {
+        setUpdating(true);
+        setUpdateError('');
+        try {
+            const newStatus = selectedAlert.status === 'open' ? 'closed' : 'open';
+            await updateAlertStatus(selectedAlert.id, newStatus);
+            setAlerts(alerts.map(a => a.id === selectedAlert.id ? { ...a, status: newStatus } : a));
+            setSelectedAlert({ ...selectedAlert, status: newStatus });
+            setUpdateSuccess(`Alert ${newStatus === 'closed' ? 'closed' : 'reopened'} successfully`);
+        } catch (err) {
+            setUpdateError(err.error || 'Failed to update alert status');
+        } finally {
+            setUpdating(false);
+        }
     };
 
     const handlePrevPage = () => {
@@ -398,15 +414,15 @@ function Alerts() {
                         ) : alerts.length === 0 ? (
                             <div className="empty-state">
                                 <h3 className="empty-state-title">
-                                    {filters.status === 'open' ? 'No Open Alerts' : 
-                                     filters.status === 'closed' ? 'No Closed Alerts' : 
-                                     filters.q ? 'No Matching Alerts' : 'No Alerts Found'}
+                                    {filters.status === 'open' ? 'No Open Alerts' :
+                                        filters.status === 'closed' ? 'No Closed Alerts' :
+                                            filters.q ? 'No Matching Alerts' : 'No Alerts Found'}
                                 </h3>
                                 <p className="empty-state-description">
-                                    {filters.status === 'open' ? 'All alerts have been resolved. Great work!' : 
-                                     filters.status === 'closed' ? 'No alerts have been closed yet.' : 
-                                     filters.q ? `No alerts match "${filters.q}". Try a different search term.` : 
-                                     'No security alerts detected. Your system is secure.'}
+                                    {filters.status === 'open' ? 'All alerts have been resolved. Great work!' :
+                                        filters.status === 'closed' ? 'No alerts have been closed yet.' :
+                                            filters.q ? `No alerts match "${filters.q}". Try a different search term.` :
+                                                'No security alerts detected. Your system is secure.'}
                                 </p>
                                 {(filters.status || filters.severity || filters.from || filters.to || filters.q) && (
                                     <button onClick={handleClearFilters} className="btn btn-secondary">
@@ -418,7 +434,7 @@ function Alerts() {
                             <>
                                 <div className="pagination-info">
                                     <span>
-                                        Showing {pageInfo.skip + 1}–{Math.min(pageInfo.skip + pageInfo.limit, pageInfo.total)} of {pageInfo.total} alerts
+                                        Showing {pageInfo.skip + 1}-{Math.min(pageInfo.skip + pageInfo.limit, pageInfo.total)} of {pageInfo.total} alerts
                                     </span>
                                 </div>
 
@@ -436,8 +452,8 @@ function Alerts() {
                                         </thead>
                                         <tbody>
                                             {alerts.map((alert) => (
-                                                <tr 
-                                                    key={alert.id} 
+                                                <tr
+                                                    key={alert.id}
                                                     onClick={() => setSelectedAlert(alert)}
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter' || e.key === ' ') {
@@ -589,8 +605,8 @@ function Alerts() {
                                                         <tbody>
                                                             {matchedLogs.map((log) => (
                                                                 <>
-                                                                    <tr 
-                                                                        key={log._id} 
+                                                                    <tr
+                                                                        key={log._id}
                                                                         onClick={() => setExpandedLogId(expandedLogId === log._id ? null : log._id)}
                                                                         onKeyDown={(e) => {
                                                                             if (e.key === 'Enter' || e.key === ' ') {
@@ -616,7 +632,7 @@ function Alerts() {
                                                                                 <div className="log-raw-json">
                                                                                     <div className="log-raw-json-header">
                                                                                         <strong>Raw Log Data</strong>
-                                                                                        <button 
+                                                                                        <button
                                                                                             onClick={(e) => {
                                                                                                 e.stopPropagation();
                                                                                                 setExpandedLogId(null);
@@ -644,7 +660,7 @@ function Alerts() {
                                                 {updateSuccess}
                                             </div>
                                         )}
-                                        
+
                                         {updateError && (
                                             <div className="error-message">
                                                 {updateError}

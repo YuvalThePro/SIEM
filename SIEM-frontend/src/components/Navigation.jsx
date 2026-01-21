@@ -1,10 +1,31 @@
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
 function Navigation() {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
+    const [theme, setTheme] = useState(() => {
+        const savedTheme = localStorage.getItem('theme');
+        if (!savedTheme) {
+            document.documentElement.removeAttribute('data-theme');
+        }
+        return savedTheme || 'dark';
+    });
+
+    useEffect(() => {
+        if (theme === 'dark') {
+            document.documentElement.removeAttribute('data-theme');
+        } else {
+            document.documentElement.setAttribute('data-theme', theme);
+        }
+        localStorage.setItem('theme', theme);
+    }, [theme]);
+
+    const toggleTheme = () => {
+        setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+    };
 
     const handleLogout = () => {
         logout();
@@ -26,6 +47,12 @@ function Navigation() {
         navLinks.push({ path: '/api-keys', label: 'API Keys' });
         navLinks.push({ path: '/users', label: 'Users' });
     }
+
+    // Get user initials for avatar
+    const getUserInitials = () => {
+        if (!user?.email) return '?';
+        return user.email.charAt(0).toUpperCase();
+    };
 
     return (
         <nav className="navbar">
@@ -49,14 +76,18 @@ function Navigation() {
                 </div>
 
                 <div className="navbar-user">
+                    <button onClick={toggleTheme} className="theme-toggle" title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}>
+                        {theme === 'dark' ? '☀️' : '🌙'}
+                    </button>
                     <div className="user-info">
+                        <div className="user-avatar">{getUserInitials()}</div>
                         <div className="user-details">
                             <span className="user-email">{user?.email}</span>
                             <span className="user-role">{user?.role}</span>
                         </div>
                     </div>
-                    <button onClick={handleLogout} className="btn btn-logout">
-                        Logout
+                    <button onClick={handleLogout} className="btn-logout">
+                        Sign Out
                     </button>
                 </div>
             </div>
