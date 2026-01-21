@@ -306,8 +306,8 @@ function Alerts() {
                         )}
 
                         {selectedAlert && (
-                            <div 
-                                className="modal-overlay" 
+                            <div
+                                className="modal-overlay"
                                 onClick={handleCloseModal}
                                 role="dialog"
                                 aria-modal="true"
@@ -326,8 +326,8 @@ function Alerts() {
                                                 </span>
                                             </div>
                                         </div>
-                                        <button 
-                                            onClick={handleCloseModal} 
+                                        <button
+                                            onClick={handleCloseModal}
                                             className="modal-close"
                                             aria-label="Close modal"
                                         >
@@ -337,11 +337,47 @@ function Alerts() {
                                     <div className="modal-body">
                                         <div className="modal-section">
                                             <h3>Summary</h3>
-                                            {/* Summary content will be added in next commit */}
+                                            <div className="summary-grid">
+                                                <div className="summary-item">
+                                                    <span className="summary-label">Timestamp:</span>
+                                                    <span className="summary-value">{formatTimestamp(selectedAlert.ts)}</span>
+                                                </div>
+                                                <div className="summary-item">
+                                                    <span className="summary-label">Rule Name:</span>
+                                                    <span className="summary-value">{selectedAlert.ruleName}</span>
+                                                </div>
+                                                <div className="summary-item">
+                                                    <span className="summary-label">Severity:</span>
+                                                    <span className={`severity-badge ${getSeverityBadgeClass(selectedAlert.severity)}`}>
+                                                        {selectedAlert.severity}
+                                                    </span>
+                                                </div>
+                                                <div className="summary-item">
+                                                    <span className="summary-label">Status:</span>
+                                                    <span className={`status-badge ${getStatusBadgeClass(selectedAlert.status)}`}>
+                                                        {selectedAlert.status}
+                                                    </span>
+                                                </div>
+                                                <div className="summary-item summary-item-full">
+                                                    <span className="summary-label">Description:</span>
+                                                    <span className="summary-value">{selectedAlert.description}</span>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div className="modal-section">
                                             <h3>Entities</h3>
-                                            {/* Entities content will be added in next commit */}
+                                            {selectedAlert.entities && Object.keys(selectedAlert.entities).length > 0 ? (
+                                                <div className="entities-grid">
+                                                    {Object.entries(selectedAlert.entities).map(([key, value]) => (
+                                                        <div key={key} className="entity-item">
+                                                            <span className="entity-key">{key}:</span>
+                                                            <span className="entity-value">{value}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <p className="empty-text">No entities associated with this alert</p>
+                                            )}
                                         </div>
                                         <div className="modal-section">
                                             <h3>Matched Logs</h3>
