@@ -137,7 +137,6 @@ function Alerts() {
         } catch (err) {
             let errorMessage = 'Failed to load alerts';
             
-            // Enhanced error messages based on error type
             if (err.error) {
                 errorMessage = err.error;
             } else if (err.message) {
@@ -150,7 +149,6 @@ function Alerts() {
                 }
             }
             
-            // Handle HTTP status codes
             if (err.status === 403 || err.status === 401) {
                 errorMessage = 'Authentication failed. Please log in again.';
             } else if (err.status === 404) {
@@ -399,7 +397,6 @@ function Alerts() {
                             </div>
                         ) : alerts.length === 0 ? (
                             <div className="empty-state">
-                                <div className="empty-state-icon">🔍</div>
                                 <h3 className="empty-state-title">
                                     {filters.status === 'open' ? 'No Open Alerts' : 
                                      filters.status === 'closed' ? 'No Closed Alerts' : 

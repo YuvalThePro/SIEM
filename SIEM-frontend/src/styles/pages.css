@@ -1174,7 +1174,6 @@
   color: #4b5563;
 }
 
-/* Alert Modal Specific Styles */
 .alert-modal-header-content {
   display: flex;
   flex-direction: column;
@@ -1251,7 +1250,6 @@
   padding: 1rem 0;
 }
 
-/* Matched Logs Table */
 .matched-logs-table-container {
   margin-top: 0.5rem;
   max-height: 400px;
@@ -1374,7 +1372,6 @@
   word-wrap: break-word;
 }
 
-/* Modal Actions */
 .modal-actions {
   margin-top: 1.5rem;
   padding-top: 1.5rem;
@@ -1464,7 +1461,6 @@
   font-size: 0.875rem;
 }
 
-/* Keyboard Navigation Focus Styles */
 .alerts-table tbody tr:focus {
   outline: 2px solid #667eea;
   outline-offset: -2px;
@@ -1490,7 +1486,6 @@
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
 }
 
-/* High Contrast Mode Support */
 @media (prefers-contrast: high) {
   .severity-badge,
   .status-badge {
@@ -1528,7 +1523,6 @@
   }
 }
 
-/* Reduced Motion Support */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
@@ -1542,7 +1536,6 @@
   }
 }
 
-/* Search Input */
 .filter-search {
   width: 100%;
   margin-bottom: 1rem;
@@ -1577,7 +1570,6 @@
   font-size: 0.875rem;
 }
 
-/* Enhanced Error Banner */
 .error-banner {
   background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
   border: 1px solid #fca5a5;
@@ -1620,19 +1612,12 @@
   box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);
 }
 
-/* Enhanced Empty States */
 .empty-state {
   text-align: center;
   padding: 4rem 2rem;
   background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
   border-radius: var(--radius-lg);
   margin: 2rem 0;
-}
-
-.empty-state-icon {
-  font-size: 4rem;
-  margin-bottom: 1rem;
-  opacity: 0.5;
 }
 
 .empty-state-title {
@@ -1650,13 +1635,13 @@
   margin-left: auto;
   margin-right: auto;
   line-height: 1.6;
+  text-align: center;
 }
 
 .empty-state .btn {
   margin-top: 1rem;
 }
 
-/* Enhanced Loading State */
 .loading-container {
   display: flex;
   flex-direction: column;
@@ -1681,7 +1666,6 @@
   animation: spin 0.8s linear infinite;
 }
 
-/* Loading Skeleton (Optional) */
 .skeleton-row {
   background: linear-gradient(
     90deg,
@@ -1729,7 +1713,6 @@
   width: 100%;
 }
 
-/* Accessibility - Increased contrast for text */
 .alerts-table tbody tr td {
   color: #1f2937;
 }
@@ -1738,7 +1721,6 @@
   color: #1f2937;
 }
 
-/* Smooth transitions */
 .filters-bar,
 .table-container,
 .pagination-controls,
@@ -1746,7 +1728,6 @@
   transition: opacity 0.2s ease;
 }
 
-/* Print styles */
 @media print {
   .filters-bar,
   .pagination-controls,

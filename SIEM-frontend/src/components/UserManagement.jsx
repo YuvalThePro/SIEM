@@ -85,8 +85,8 @@ function UserManagement() {
             setCreateError('Email is required');
             return;
         }
-        if (newUserPassword.length < 8) {
-            setCreateError('Password must be at least 8 characters');
+        if (newUserPassword.length < 6) {
+            setCreateError('Password must be at least 6 characters');
             return;
         }
 
@@ -272,11 +272,11 @@ function UserManagement() {
                                                 id="userPassword"
                                                 value={newUserPassword}
                                                 onChange={(e) => setNewUserPassword(e.target.value)}
-                                                placeholder="At least 8 characters"
-                                                minLength={8}
+                                                placeholder="At least 6 characters"
+                                                minLength={6}
                                                 disabled={creating}
                                             />
-                                            <small>Minimum 8 characters</small>
+                                            <small>Minimum 6 characters</small>
                                         </div>
                                         <div className="form-group">
                                             <label htmlFor="userRole">Role *</label>
@@ -306,7 +306,7 @@ function UserManagement() {
                                             <button
                                                 type="submit"
                                                 className="btn btn-primary"
-                                                disabled={creating || !newUserEmail.trim() || newUserPassword.length < 8}
+                                                disabled={creating || !newUserEmail.trim() || newUserPassword.length < 6}
                                             >
                                                 {creating ? 'Creating...' : 'Create User'}
                                             </button>
