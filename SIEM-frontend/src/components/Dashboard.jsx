@@ -63,6 +63,34 @@ function Dashboard() {
         fetchStats(newRange);
     };
 
+    const getSeverityBadgeClass = (severity) => {
+        const severityMap = {
+            low: 'badge-severity-low',
+            medium: 'badge-severity-medium',
+            high: 'badge-severity-high',
+            critical: 'badge-severity-critical'
+        };
+        return severityMap[severity] || 'badge-severity-low';
+    };
+
+    const getStatusBadgeClass = (status) => {
+        const statusMap = {
+            open: 'badge-status-open',
+            closed: 'badge-status-closed'
+        };
+        return statusMap[status] || 'badge-status-open';
+    };
+
+    const formatDateTime = (dateString) => {
+        const date = new Date(dateString);
+        return date.toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    };
+
     return (
         <div className="app-layout">
             <Navigation />
@@ -202,6 +230,50 @@ function Dashboard() {
                                         </div>
                                     )}
                                 </div>
+                            </div>
+                        </div>
+
+                        <div className="info-card">
+                            <div className="info-card-header">
+                                <h3>Recent Security Alerts</h3>
+                            </div>
+                            <div className="info-card-content">
+                                {stats?.recent?.alerts && stats.recent.alerts.length > 0 ? (
+                                    <div className="table-container">
+                                        <table className="alerts-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Time</th>
+                                                    <th>Rule Name</th>
+                                                    <th>Severity</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {stats.recent.alerts.slice(0, 10).map((alert) => (
+                                                    <tr key={alert.id}>
+                                                        <td>{formatDateTime(alert.timestamp)}</td>
+                                                        <td>{alert.ruleName}</td>
+                                                        <td>
+                                                            <span className={`severity-badge ${getSeverityBadgeClass(alert.severity)}`}>
+                                                                {alert.severity}
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <span className={`status-badge ${getStatusBadgeClass(alert.status)}`}>
+                                                                {alert.status}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                ) : (
+                                    <div className="info-item">
+                                        <span className="info-value">No recent alerts</span>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
