@@ -79,6 +79,23 @@ function Alerts() {
         fetchAlerts(clearedFilters, 1);
     };
 
+    const handlePrevPage = () => {
+        if (currentPage > 1) {
+            const newPage = currentPage - 1;
+            setCurrentPage(newPage);
+            fetchAlerts(null, newPage);
+        }
+    };
+
+    const handleNextPage = () => {
+        const totalPages = Math.ceil(pageInfo.total / pageInfo.limit);
+        if (currentPage < totalPages && totalPages > 0) {
+            const newPage = currentPage + 1;
+            setCurrentPage(newPage);
+            fetchAlerts(null, newPage);
+        }
+    };
+
     const formatTimestamp = (ts) => {
         const date = new Date(ts);
         const options = {
@@ -201,32 +218,60 @@ function Alerts() {
                                 <p>No alerts found</p>
                             </div>
                         ) : (
-                            <div className="table-container">
-                                <table className="alerts-table" aria-label="Security alerts table">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Time</th>
-                                            <th scope="col">Rule</th>
-                                            <th scope="col">Severity</th>
-                                            <th scope="col">Status</th>
-                                            <th scope="col">Entities</th>
-                                            <th scope="col">Description</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {alerts.map((alert) => (
-                                            <tr key={alert.id}>
-                                                <td>{formatTimestamp(alert.ts)}</td>
-                                                <td>{alert.ruleName}</td>
-                                                <td>{alert.severity}</td>
-                                                <td>{alert.status}</td>
-                                                <td>{formatEntities(alert.entities)}</td>
-                                                <td>{alert.description}</td>
+                            <>
+                                <div className="pagination-info">
+                                    <span>
+                                        Showing {pageInfo.skip + 1}–{Math.min(pageInfo.skip + pageInfo.limit, pageInfo.total)} of {pageInfo.total} alerts
+                                    </span>
+                                </div>
+
+                                <div className="table-container">
+                                    <table className="alerts-table" aria-label="Security alerts table">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Time</th>
+                                                <th scope="col">Rule</th>
+                                                <th scope="col">Severity</th>
+                                                <th scope="col">Status</th>
+                                                <th scope="col">Entities</th>
+                                                <th scope="col">Description</th>
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
+                                        </thead>
+                                        <tbody>
+                                            {alerts.map((alert) => (
+                                                <tr key={alert.id}>
+                                                    <td>{formatTimestamp(alert.ts)}</td>
+                                                    <td>{alert.ruleName}</td>
+                                                    <td>{alert.severity}</td>
+                                                    <td>{alert.status}</td>
+                                                    <td>{formatEntities(alert.entities)}</td>
+                                                    <td>{alert.description}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div className="pagination-controls">
+                                    <button
+                                        onClick={handlePrevPage}
+                                        className="btn btn-secondary"
+                                        disabled={currentPage === 1}
+                                    >
+                                        Previous
+                                    </button>
+                                    <span className="pagination-page">
+                                        Page {currentPage} of {Math.ceil(pageInfo.total / pageInfo.limit) || 1}
+                                    </span>
+                                    <button
+                                        onClick={handleNextPage}
+                                        className="btn btn-secondary"
+                                        disabled={currentPage >= Math.ceil(pageInfo.total / pageInfo.limit)}
+                                    >
+                                        Next
+                                    </button>
+                                </div>
+                            </>
                         )}
                     </div>
                 </div>
