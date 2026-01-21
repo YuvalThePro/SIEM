@@ -85,8 +85,15 @@ function UserManagement() {
             setCreateError('Email is required');
             return;
         }
-        if (newUserPassword.length < 6) {
-            setCreateError('Password must be at least 6 characters');
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(newUserEmail.trim())) {
+            setCreateError('Please provide a valid email address');
+            return;
+        }
+
+        if (newUserPassword.length < 8) {
+            setCreateError('Password must be at least 8 characters');
             return;
         }
 
@@ -272,11 +279,12 @@ function UserManagement() {
                                                 id="userPassword"
                                                 value={newUserPassword}
                                                 onChange={(e) => setNewUserPassword(e.target.value)}
-                                                placeholder="At least 6 characters"
-                                                minLength={6}
+                                                placeholder="At least 8 characters"
+                                                minLength={8}
                                                 disabled={creating}
+                                                required
                                             />
-                                            <small>Minimum 6 characters</small>
+                                            <small>Minimum 8 characters</small>
                                         </div>
                                         <div className="form-group">
                                             <label htmlFor="userRole">Role *</label>
@@ -306,7 +314,7 @@ function UserManagement() {
                                             <button
                                                 type="submit"
                                                 className="btn btn-primary"
-                                                disabled={creating || !newUserEmail.trim() || newUserPassword.length < 6}
+                                                disabled={creating || !newUserEmail.trim() || newUserPassword.length < 8}
                                             >
                                                 {creating ? 'Creating...' : 'Create User'}
                                             </button>

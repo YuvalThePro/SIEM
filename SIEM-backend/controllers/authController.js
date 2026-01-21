@@ -3,6 +3,7 @@ import Tenant from '../models/Tenant.js';
 import User from '../models/User.js';
 import { generateToken } from '../utils/jwt.js';
 import { hashApiKey } from '../utils/crypto.js';
+import { validationResult } from 'express-validator';
 
 /**
  * Register a new tenant and admin user
@@ -10,18 +11,33 @@ import { hashApiKey } from '../utils/crypto.js';
  */
 export const register = async (req, res) => {
     try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({
+                error: errors.array()[0].msg
+            });
+        }
+
         const { companyName, email, password } = req.body;
         if (!companyName || !email || !password) {
             return res.status(400).json({
                 error: 'Please provide companyName, email, and password'
             });
         }
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
-            return res.status(409).json({
-                error: 'Email already registered'
+
+        const existingTenant = await Tenant.findOne({ name: companyName });
+        if (existingTenant) {
+            const existingUser = await User.findOne({ 
+                email, 
+                tenantId: existingTenant._id 
             });
+            if (existingUser) {
+                return res.status(409).json({
+                    error: 'Email already registered in this company'
+                });
+            }
         }
+
         const tenant = await Tenant.create({
             name: companyName
         });
@@ -61,6 +77,13 @@ export const register = async (req, res) => {
  */
 export const login = async (req, res) => {
     try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({
+                error: errors.array()[0].msg
+            });
+        }
+
         const { email, password } = req.body;
         if (!email || !password) {
             return res.status(400).json({

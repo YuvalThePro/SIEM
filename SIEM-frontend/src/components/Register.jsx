@@ -29,14 +29,8 @@ function Register() {
         setError('');
         setIsLoading(true);
 
-        if (!formData.companyName || !formData.email || !formData.password) {
-            setError('Please fill in all fields');
-            setIsLoading(false);
-            return;
-        }
-
-        if (formData.password.length < 6) {
-            setError('Password must be at least 6 characters');
+        if (formData.password.length < 8) {
+            setError('Password must be at least 8 characters');
             setIsLoading(false);
             return;
         }
@@ -121,12 +115,12 @@ function Register() {
                                 id="password"
                                 name="password"
                                 className="form-input"
-                                placeholder="Minimum 6 characters"
+                                placeholder="Minimum 8 characters"
                                 value={formData.password}
                                 onChange={handleChange}
                                 disabled={isLoading}
                                 required
-                                minLength={6}
+                                minLength={8}
                             />
                         </div>
 

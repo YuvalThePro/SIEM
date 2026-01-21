@@ -28,12 +28,6 @@ function Login() {
         setError('');
         setIsLoading(true);
 
-        if (!formData.email || !formData.password) {
-            setError('Please fill in all fields');
-            setIsLoading(false);
-            return;
-        }
-
         try {
             const data = await loginUser(formData.email, formData.password);
 
