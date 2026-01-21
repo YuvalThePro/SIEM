@@ -1094,3 +1094,41 @@
 .btn-retry:active {
   transform: translateY(1px);
 }
+.alerts-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.alerts-table th {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  font-weight: 600;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border-bottom: 2px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.alerts-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+.alerts-table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.alerts-table tbody tr:hover {
+  background-color: var(--bg-secondary);
+  cursor: pointer;
+}
+
+.alerts-table tbody tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+.alerts-table tbody tr:nth-child(even):hover {
+  background-color: var(--bg-secondary);
+}
