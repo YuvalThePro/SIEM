@@ -1,9 +1,61 @@
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import Navigation from './Navigation';
+import { getStats } from '../services/statsService';
 import '../styles/pages.css';
 
 function Dashboard() {
     const { user, tenant } = useAuth();
+
+    const [stats, setStats] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+    const [range, setRange] = useState('24h');
+
+    useEffect(() => {
+        fetchStats();
+    }, []);
+
+    const fetchStats = async (customRange = null) => {
+        try {
+            setLoading(true);
+            setError('');
+
+            const activeRange = customRange || range;
+            const data = await getStats(activeRange);
+            setStats(data);
+        } catch (err) {
+            let errorMessage = 'Failed to load statistics';
+            
+            if (err.error) {
+                errorMessage = err.error;
+            } else if (err.message) {
+                if (err.message.includes('Network Error') || err.message.includes('ERR_NETWORK')) {
+                    errorMessage = 'Network error. Please check your connection and try again.';
+                } else if (err.message.includes('timeout')) {
+                    errorMessage = 'Request timeout. The server is taking too long to respond.';
+                } else {
+                    errorMessage = err.message;
+                }
+            }
+            
+            if (err.status === 403 || err.status === 401) {
+                errorMessage = 'Authentication failed. Please log in again.';
+            } else if (err.status === 404) {
+                errorMessage = 'Statistics endpoint not found. Please contact support.';
+            } else if (err.status === 500) {
+                errorMessage = 'Server error. Please try again later.';
+            }
+            
+            setError(errorMessage);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleRetry = () => {
+        fetchStats();
+    };
 
     return (
         <div className="app-layout">

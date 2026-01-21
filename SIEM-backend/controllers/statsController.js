@@ -10,17 +10,17 @@ export const getStats = async (req, res) => {
     try {
         const { tenantId } = req.user;
 
-        
+
         const range = req.query.range || '24h';
-        
+
         let from, to;
 
-        
+
         if (req.query.from && req.query.to) {
             from = new Date(req.query.from);
             to = new Date(req.query.to);
 
-            
+
             if (isNaN(from.getTime()) || isNaN(to.getTime())) {
                 return res.status(400).json({
                     error: 'Invalid date format. Use ISO 8601 format.'
@@ -34,14 +34,14 @@ export const getStats = async (req, res) => {
             }
         } else {
             to = new Date();
-            
+
             let hours;
             switch (range) {
                 case '7d':
-                    hours = 7 * 24; 
+                    hours = 7 * 24;
                     break;
                 case '30d':
-                    hours = 30 * 24; 
+                    hours = 30 * 24;
                     break;
                 case '24h':
                 default:
@@ -68,17 +68,17 @@ export const getStats = async (req, res) => {
             recentLogs,
             recentAlerts
         ] = await Promise.all([
-            
+
             Log.countDocuments(timeQuery),
 
             // Logs grouped by level
             Log.aggregate([
                 { $match: timeQuery },
-                { 
-                    $group: { 
-                        _id: '$level', 
-                        count: { $sum: 1 } 
-                    } 
+                {
+                    $group: {
+                        _id: '$level',
+                        count: { $sum: 1 }
+                    }
                 }
             ]),
 
@@ -91,51 +91,51 @@ export const getStats = async (req, res) => {
 
             // Top 10 IPs
             Log.aggregate([
-                { 
-                    $match: { 
+                {
+                    $match: {
                         ...timeQuery,
                         ip: { $exists: true, $ne: null, $ne: '' }
-                    } 
+                    }
                 },
-                { 
-                    $group: { 
-                        _id: '$ip', 
-                        count: { $sum: 1 } 
-                    } 
+                {
+                    $group: {
+                        _id: '$ip',
+                        count: { $sum: 1 }
+                    }
                 },
                 { $sort: { count: -1 } },
                 { $limit: 10 },
-                { 
-                    $project: { 
-                        _id: 0, 
-                        ip: '$_id', 
-                        count: 1 
-                    } 
+                {
+                    $project: {
+                        _id: 0,
+                        ip: '$_id',
+                        count: 1
+                    }
                 }
             ]),
 
             // Top 10 Event Types
             Log.aggregate([
-                { 
-                    $match: { 
+                {
+                    $match: {
                         ...timeQuery,
                         eventType: { $exists: true, $ne: null, $ne: '' }
-                    } 
+                    }
                 },
-                { 
-                    $group: { 
-                        _id: '$eventType', 
-                        count: { $sum: 1 } 
-                    } 
+                {
+                    $group: {
+                        _id: '$eventType',
+                        count: { $sum: 1 }
+                    }
                 },
                 { $sort: { count: -1 } },
                 { $limit: 10 },
-                { 
-                    $project: { 
-                        _id: 0, 
-                        eventType: '$_id', 
-                        count: 1 
-                    } 
+                {
+                    $project: {
+                        _id: 0,
+                        eventType: '$_id',
+                        count: 1
+                    }
                 }
             ]),
 
@@ -170,7 +170,7 @@ export const getStats = async (req, res) => {
             }
         });
 
-        
+
         const formattedAlerts = recentAlerts.map(alert => ({
             id: alert._id,
             ts: alert.ts,
@@ -180,7 +180,7 @@ export const getStats = async (req, res) => {
             description: alert.description
         }));
 
-        
+
         const response = {
             range: {
                 from: from.toISOString(),
