@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import Navigation from './Navigation';
-import { getAlerts } from '../services/alertsService';
+import { getAlerts, updateAlertStatus } from '../services/alertsService';
 import { getLogsByIds } from '../services/logsService';
 import '../styles/pages.css';
 
@@ -21,6 +21,9 @@ function Alerts() {
     const [matchedLogs, setMatchedLogs] = useState([]);
     const [loadingLogs, setLoadingLogs] = useState(false);
     const [expandedLogId, setExpandedLogId] = useState(null);
+    const [updating, setUpdating] = useState(false);
+    const [updateSuccess, setUpdateSuccess] = useState('');
+    const [updateError, setUpdateError] = useState('');
 
     const [filters, setFilters] = useState({
         status: '',
@@ -109,6 +112,8 @@ function Alerts() {
         setSelectedAlert(null);
         setMatchedLogs([]);
         setExpandedLogId(null);
+        setUpdateSuccess('');
+        setUpdateError('');
     };
 
     const handlePrevPage = () => {
@@ -467,6 +472,35 @@ function Alerts() {
                                                     </table>
                                                 </div>
                                             )}
+                                        </div>
+
+                                        {updateSuccess && (
+                                            <div className="success-message">
+                                                {updateSuccess}
+                                            </div>
+                                        )}
+                                        
+                                        {updateError && (
+                                            <div className="error-message">
+                                                {updateError}
+                                            </div>
+                                        )}
+
+                                        <div className="modal-actions">
+                                            <button
+                                                onClick={handleUpdateStatus}
+                                                className={`btn btn-action ${selectedAlert.status === 'open' ? 'btn-close-alert' : 'btn-reopen-alert'}`}
+                                                disabled={updating}
+                                            >
+                                                {updating ? (
+                                                    <>
+                                                        <span className="btn-spinner"></span>
+                                                        {selectedAlert.status === 'open' ? 'Closing...' : 'Reopening...'}
+                                                    </>
+                                                ) : (
+                                                    selectedAlert.status === 'open' ? 'Close Alert' : 'Reopen Alert'
+                                                )}
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
