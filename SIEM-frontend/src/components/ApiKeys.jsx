@@ -252,7 +252,7 @@ function ApiKeys() {
                                 <div className="modal-content">
                                     <h2>API Key Created!</h2>
                                     <div className="warning-box">
-                                        <strong>⚠️ Important:</strong> Save this key now. You won't see it again.
+                                        <strong>Important:</strong> Save this key now. You won't see it again.
                                     </div>
                                     <div className="key-display">
                                         <code>{rawKeyValue}</code>
@@ -281,7 +281,7 @@ function ApiKeys() {
                                     <h2>Revoke API Key</h2>
                                     <p>Are you sure you want to revoke key <strong>'{keyToRevoke.name}'</strong>?</p>
                                     <div className="warning-box">
-                                        <strong>⚠️ Warning:</strong> Ingest will stop working for systems using this key.
+                                        <strong>Warning:</strong> Ingest will stop working for systems using this key.
                                     </div>
                                     <div className="modal-actions">
                                         <button

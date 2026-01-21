@@ -21,9 +21,10 @@ function Navigation() {
         { path: '/alerts', label: 'Alerts' },
     ];
 
-    // Add API Keys link for admin users
+    // Add admin-only links
     if (user?.role === 'admin') {
         navLinks.push({ path: '/api-keys', label: 'API Keys' });
+        navLinks.push({ path: '/users', label: 'Users' });
     }
 
     return (
