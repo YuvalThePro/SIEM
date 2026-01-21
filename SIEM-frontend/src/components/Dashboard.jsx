@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Navigation from './Navigation';
 import { getStats } from '../services/statsService';
@@ -6,6 +7,7 @@ import '../styles/pages.css';
 
 function Dashboard() {
     const { user, tenant } = useAuth();
+    const navigate = useNavigate();
 
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -16,6 +18,10 @@ function Dashboard() {
         fetchStats();
     }, []);
 
+    /**
+     * Fetches dashboard statistics from the API
+     * @param {string|null} customRange - Optional time range override (24h, 7d, 30d)
+     */
     const fetchStats = async (customRange = null) => {
         try {
             setLoading(true);
@@ -53,16 +59,28 @@ function Dashboard() {
         }
     };
 
+    /**
+     * Retries fetching statistics after an error
+     */
     const handleRetry = () => {
         fetchStats();
     };
 
+    /**
+     * Handles time range selection change
+     * @param {Event} e - Change event from select element
+     */
     const handleRangeChange = (e) => {
         const newRange = e.target.value;
         setRange(newRange);
         fetchStats(newRange);
     };
 
+    /**
+     * Returns CSS class for alert severity badge
+     * @param {string} severity - Alert severity level
+     * @returns {string} CSS class name
+     */
     const getSeverityBadgeClass = (severity) => {
         const severityMap = {
             low: 'badge-severity-low',
@@ -73,6 +91,11 @@ function Dashboard() {
         return severityMap[severity] || 'badge-severity-low';
     };
 
+    /**
+     * Returns CSS class for alert status badge
+     * @param {string} status - Alert status
+     * @returns {string} CSS class name
+     */
     const getStatusBadgeClass = (status) => {
         const statusMap = {
             open: 'badge-status-open',
@@ -81,6 +104,11 @@ function Dashboard() {
         return statusMap[status] || 'badge-status-open';
     };
 
+    /**
+     * Returns CSS class for log level badge
+     * @param {string} level - Log level
+     * @returns {string} CSS class name
+     */
     const getLevelBadgeClass = (level) => {
         const levelMap = {
             info: 'badge-info',
@@ -91,11 +119,22 @@ function Dashboard() {
         return levelMap[level] || 'badge-info';
     };
 
+    /**
+     * Truncates a message to specified length with ellipsis
+     * @param {string} message - Message to truncate
+     * @param {number} maxLength - Maximum length before truncation
+     * @returns {string} Truncated message
+     */
     const truncateMessage = (message, maxLength = 60) => {
         if (!message) return '';
         return message.length > maxLength ? message.substring(0, maxLength) + '...' : message;
     };
 
+    /**
+     * Formats a date string for display
+     * @param {string} dateString - ISO date string
+     * @returns {string} Formatted date string
+     */
     const formatDateTime = (dateString) => {
         const date = new Date(dateString);
         return date.toLocaleString('en-US', {
@@ -104,6 +143,21 @@ function Dashboard() {
             hour: '2-digit',
             minute: '2-digit'
         });
+    };
+
+    /**
+     * Navigates to logs page with pre-applied filters
+     * @param {string} filterType - Type of filter (source or eventType)
+     * @param {string} filterValue - Value to filter by
+     */
+    const handleNavigateToLogs = (filterType, filterValue) => {
+        const params = new URLSearchParams();
+        if (filterType === 'source') {
+            params.set('source', filterValue);
+        } else if (filterType === 'eventType') {
+            params.set('eventType', filterValue);
+        }
+        navigate(`/logs?${params.toString()}`);
     };
 
     return (
@@ -119,6 +173,26 @@ function Dashboard() {
                             </p>
                         </div>
 
+                        {error && (
+                            <div className="error-banner" role="alert" aria-live="polite">
+                                <div className="error-content">
+                                    <div className="error-message">
+                                        {error}
+                                    </div>
+                                    <button onClick={handleRetry} className="btn btn-retry" aria-label="Retry loading statistics">
+                                        Try Again
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {loading ? (
+                            <div className="loading-container" role="status" aria-live="polite">
+                                <div className="spinner" aria-hidden="true"></div>
+                                <p className="loading-text">Loading dashboard statistics...</p>
+                            </div>
+                        ) : (
+                            <>
                         <div className="dashboard-grid">
                             <div className="info-card">
                                 <div className="info-card-header">
@@ -168,6 +242,7 @@ function Dashboard() {
                                 value={range} 
                                 onChange={handleRangeChange}
                                 className="filter-select"
+                                aria-label="Select time range for dashboard statistics"
                             >
                                 <option value="24h">Last 24 Hours</option>
                                 <option value="7d">Last 7 Days</option>
@@ -211,17 +286,26 @@ function Dashboard() {
                                 <div className="info-card-header">
                                     <h3>Top IP Addresses</h3>
                                 </div>
-                                <div className="info-card-content">
+                                <div className="info-card-content" role="list" aria-label="Top IP addresses">
                                     {stats?.topIps && stats.topIps.length > 0 ? (
                                         stats.topIps.map((item, index) => (
-                                            <div key={index} className="info-item">
+                                            <div 
+                                                key={index} 
+                                                className="info-item" 
+                                                role="listitem"
+                                                style={{ cursor: 'pointer' }}
+                                                onClick={() => handleNavigateToLogs('source', item.ip)}
+                                                onKeyPress={(e) => e.key === 'Enter' && handleNavigateToLogs('source', item.ip)}
+                                                tabIndex={0}
+                                                aria-label={`${item.ip} with ${item.count} occurrences, click to view logs`}
+                                            >
                                                 <span className="info-label">{item.ip}</span>
                                                 <span className="info-value">{item.count}</span>
                                             </div>
                                         ))
                                     ) : (
-                                        <div className="info-item">
-                                            <span className="info-value">No data available</span>
+                                        <div className="info-item" role="listitem">
+                                            <span className="info-value">No IP data available</span>
                                         </div>
                                     )}
                                 </div>
@@ -231,17 +315,26 @@ function Dashboard() {
                                 <div className="info-card-header">
                                     <h3>Top Event Types</h3>
                                 </div>
-                                <div className="info-card-content">
+                                <div className="info-card-content" role="list" aria-label="Top event types">
                                     {stats?.topEventTypes && stats.topEventTypes.length > 0 ? (
                                         stats.topEventTypes.map((item, index) => (
-                                            <div key={index} className="info-item">
+                                            <div 
+                                                key={index} 
+                                                className="info-item"
+                                                role="listitem"
+                                                style={{ cursor: 'pointer' }}
+                                                onClick={() => handleNavigateToLogs('eventType', item.eventType)}
+                                                onKeyPress={(e) => e.key === 'Enter' && handleNavigateToLogs('eventType', item.eventType)}
+                                                tabIndex={0}
+                                                aria-label={`${item.eventType} with ${item.count} occurrences, click to view logs`}
+                                            >
                                                 <span className="info-label">{item.eventType}</span>
                                                 <span className="info-value">{item.count}</span>
                                             </div>
                                         ))
                                     ) : (
-                                        <div className="info-item">
-                                            <span className="info-value">No data available</span>
+                                        <div className="info-item" role="listitem">
+                                            <span className="info-value">No event type data available</span>
                                         </div>
                                     )}
                                 </div>
@@ -254,14 +347,14 @@ function Dashboard() {
                             </div>
                             <div className="info-card-content">
                                 {stats?.recent?.alerts && stats.recent.alerts.length > 0 ? (
-                                    <div className="table-container">
+                                    <div className="table-container" role="region" aria-label="Recent security alerts table">
                                         <table className="alerts-table">
                                             <thead>
                                                 <tr>
-                                                    <th>Time</th>
-                                                    <th>Rule Name</th>
-                                                    <th>Severity</th>
-                                                    <th>Status</th>
+                                                    <th scope="col">Time</th>
+                                                    <th scope="col">Rule Name</th>
+                                                    <th scope="col">Severity</th>
+                                                    <th scope="col">Status</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -286,11 +379,7 @@ function Dashboard() {
                                     </div>
                                 ) : (
                                     <div className="info-item">
-                                        <span className="info-value">No recent alerts</span>
-                                    </div>
-                                ) : (
-                                    <div className="info-item">
-                                        <span className="info-value">No recent alerts</span>
+                                        <span className="info-value">No recent alerts found</span>
                                     </div>
                                 )}
                             </div>
@@ -302,15 +391,15 @@ function Dashboard() {
                             </div>
                             <div className="info-card-content">
                                 {stats?.recent?.logs && stats.recent.logs.length > 0 ? (
-                                    <div className="table-container">
+                                    <div className="table-container" role="region" aria-label="Recent log activity table">
                                         <table className="alerts-table">
                                             <thead>
                                                 <tr>
-                                                    <th>Time</th>
-                                                    <th>Level</th>
-                                                    <th>Event Type</th>
-                                                    <th>Source</th>
-                                                    <th>Message</th>
+                                                    <th scope="col">Time</th>
+                                                    <th scope="col">Level</th>
+                                                    <th scope="col">Event Type</th>
+                                                    <th scope="col">Source</th>
+                                                    <th scope="col">Message</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -332,11 +421,13 @@ function Dashboard() {
                                     </div>
                                 ) : (
                                     <div className="info-item">
-                                        <span className="info-value">No recent logs</span>
+                                        <span className="info-value">No recent logs found</span>
                                     </div>
                                 )}
                             </div>
                         </div>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>
