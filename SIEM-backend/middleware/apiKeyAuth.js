@@ -7,7 +7,6 @@ import ApiKey from '../models/ApiKey.js';
  */
 const apiKeyAuth = async (req, res, next) => {
     try {
-        // Extract API key from header
         const rawKey = req.headers['x-api-key'];
 
         if (!rawKey) {
@@ -19,7 +18,6 @@ const apiKeyAuth = async (req, res, next) => {
 
         const apiKeys = await ApiKey.find({ enabled: true });
 
-        // Try to find a matching key by comparing with bcrypt
         let matchedApiKey = null;
         for (const apiKey of apiKeys) {
             const isMatch = await bcrypt.compare(rawKey, apiKey.keyHash);
@@ -36,15 +34,13 @@ const apiKeyAuth = async (req, res, next) => {
             });
         }
 
-        // Attach tenant context to request
         req.tenantId = matchedApiKey.tenantId;
         req.apiKeyId = matchedApiKey._id;
 
-        // Update last used timestamp 
         ApiKey.findByIdAndUpdate(
             matchedApiKey._id,
             { lastUsed: new Date() },
-            { timestamps: false } // Dont update updatedAt. because this is a lastUsed update only.
+            { timestamps: false }
         ).catch(err => console.error('Failed to update lastUsed:', err));
 
         next();

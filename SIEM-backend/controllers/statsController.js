@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import Log from '../models/Log.js';
 import Alert from '../models/Alert.js';
 
@@ -9,7 +10,9 @@ import Alert from '../models/Alert.js';
 export const getStats = async (req, res) => {
     try {
         const { tenantId } = req.user;
-
+        
+        // Convert tenantId string to ObjectId for aggregation queries
+        const tenantObjectId = new mongoose.Types.ObjectId(tenantId);
 
         const range = req.query.range || '24h';
 
@@ -52,13 +55,11 @@ export const getStats = async (req, res) => {
             from = new Date(to.getTime() - hours * 60 * 60 * 1000);
         }
 
-        // Build query for time range
         const timeQuery = {
-            tenantId,
+            tenantId: tenantObjectId,
             ts: { $gte: from, $lte: to }
         };
 
-        // Execute all aggregations in parallel
         const [
             totalLogs,
             logsByLevel,
@@ -71,7 +72,6 @@ export const getStats = async (req, res) => {
 
             Log.countDocuments(timeQuery),
 
-            // Logs grouped by level
             Log.aggregate([
                 { $match: timeQuery },
                 {
@@ -82,14 +82,12 @@ export const getStats = async (req, res) => {
                 }
             ]),
 
-            // Open alerts count
             Alert.countDocuments({
-                tenantId,
+                tenantId: tenantObjectId,
                 status: 'open',
                 ts: { $gte: from, $lte: to }
             }),
 
-            // Top 10 IPs
             Log.aggregate([
                 {
                     $match: {
@@ -114,7 +112,6 @@ export const getStats = async (req, res) => {
                 }
             ]),
 
-            // Top 10 Event Types
             Log.aggregate([
                 {
                     $match: {
@@ -139,16 +136,14 @@ export const getStats = async (req, res) => {
                 }
             ]),
 
-            // Recent 10 logs
             Log.find(timeQuery)
                 .sort({ ts: -1 })
                 .limit(10)
                 .select('ts level eventType source message ip user')
                 .lean(),
 
-            // Recent 10 alerts
             Alert.find({
-                tenantId,
+                tenantId: tenantObjectId,
                 ts: { $gte: from, $lte: to }
             })
                 .sort({ ts: -1 })
@@ -157,11 +152,11 @@ export const getStats = async (req, res) => {
                 .lean()
         ]);
 
-        // Process logs by level into object
         const byLevel = {
             info: 0,
             warn: 0,
-            error: 0
+            error: 0,
+            critical: 0
         };
 
         logsByLevel.forEach(item => {
@@ -170,10 +165,20 @@ export const getStats = async (req, res) => {
             }
         });
 
+        const formattedLogs = recentLogs.map(log => ({
+            id: log._id,
+            timestamp: log.ts,
+            level: log.level,
+            eventType: log.eventType,
+            source: log.source,
+            message: log.message,
+            ip: log.ip,
+            user: log.user
+        }));
 
         const formattedAlerts = recentAlerts.map(alert => ({
             id: alert._id,
-            ts: alert.ts,
+            timestamp: alert.ts,
             ruleName: alert.ruleName,
             severity: alert.severity,
             status: alert.status,
@@ -194,7 +199,7 @@ export const getStats = async (req, res) => {
             topIps,
             topEventTypes,
             recent: {
-                logs: recentLogs,
+                logs: formattedLogs,
                 alerts: formattedAlerts
             }
         };
